@@ -1,24 +1,40 @@
-import MyCourses from "./MyCourse";
-import QnaPage from "./QnA";
-import SideBar from "./SideBar";
-import { Routes, Route } from "react-router-dom";
-import CourseUpload from "./CourseUpload";
-import SettingPage from "./SettingPage";
-import Dashboard from "./Dashboard";
-function App() {
-  return (
-    <div className="flex">
-      <Routes>
-        <Route path="/" element={<MyCourses/>} />
-        <Route path="/SideBar" element={<SideBar/>} />
-        <Route path="/QnaPage" element={<QnaPage/>} />
-        <Route path="/MyCourses" element={<MyCourses/>}></Route>
-        <Route path="/CourseUpload" element={<CourseUpload/>}></Route>
-        <Route path="/SettingPage" element={<SettingPage/>}></Route>
-        <Route path="/Dashboard" element={<Dashboard/>}></Route>
-          </Routes>
-    </div>
-  );
-}
+// import MyCourse from "../pages/MyCourse";
+// import QnA from "../pageas/QnA";
+// import SideBar from "./SideBar";
+// import { Routes, Route } from "react-router-dom";
+// import CourseUpload from "./CourseUpload";
+// import SettingPage from "./SettingPage";
+// import Dashboard from "./Dashboard";
+// import CourseDatail from "./CourseDatail";
 
+// function App() {
+//   return (
+//     <div className="flex">
+//       <Routes>
+//         <Route path="/" element={<MyCourse></MyCourse>} />
+//         <Route path="/sideBar" element={<SideBar/>} />
+//         <Route path="/qnapage" element={<QnA/>} />
+//         <Route path="/coursedetail/:id" element={<CourseDatail />}></Route>
+//         <Route path="/courseupload" element={<CourseUpload/>}></Route>
+//         <Route path="/settingpage" element={<SettingPage/>}></Route>
+//         <Route path="/dashboard" element={<Dashboard/>}></Route>
+//       </Routes>
+//     </div>
+//   );
+// }
+// export default App;
+
+
+import SideBar from "./components/SideBar";
+import AppRoutes from "./Routes/AppRoutes";
+
+function App(){
+  return(
+    <div>
+      
+      <AppRoutes/>
+      <SideBar/>
+    </div>
+  )
+}
 export default App;

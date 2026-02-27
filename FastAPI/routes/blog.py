@@ -6,8 +6,6 @@ from database import SessionLocal
 import shutil
 import models
 
-router=APIRouter(tags=["Blog"])
-
 
 UPLOAD_DIR="blogimages"
 
@@ -18,6 +16,7 @@ def get_db():
     finally:
         db.close()
 
+router=APIRouter(tags=["Blog"])
 
 @router.post("/blog")
 def blog(

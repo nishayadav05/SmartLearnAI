@@ -18,8 +18,6 @@ function Home() {
             <ImageSlider/>
             <WhySmartAi />
             <CourseSlider />
-
-
       </div>
       
   )

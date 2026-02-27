@@ -1,41 +1,53 @@
 from fastapi import FastAPI,Depends
-import models
+from routes import users
+import models 
 from typing import Annotated
 from database import engine,SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import Annotated
-from schemas.student import StudentModel
-from routes import blog,student
+from schemas.user import UserModel
+from routes import blog,users
 from fastapi.staticfiles import StaticFiles
+from routes import stud_profile
+from routes import course
 import os
+
+
+
+origins = [
+    "http://localhost:5173",
+]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 app.include_router(blog.router)
-app.include_router(student.router)
+app.include_router(users.router)
+app.include_router(stud_profile.router)
+app.include_router(course.router)
 
 #Blog Image Folder
 UPLOAD_DIR="blogimages"
 os.makedirs(UPLOAD_DIR,exist_ok=True)
 app.mount("/blogimages", StaticFiles(directory="blogimages"), name="blogimages")
 
-
-origins = [
-      # 'http://localhost:3000'
-      "http://localhost:5173",
-      # "http://127.0.0.1:5173",
-      "http://localhost:5174"
-]
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # React URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # create all database tables
 models.Base.metadata.create_all(bind=engine)

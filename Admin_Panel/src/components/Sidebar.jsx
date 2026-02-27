@@ -15,7 +15,17 @@ function Sidebar() {
 
         <Link to="/student">
           <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
+            <FaUsers /> Users
+          </li>
+        </Link>
+        <Link to="/student">
+          <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
             <FaUsers /> Students
+          </li>
+        </Link>
+        <Link to="/student">
+          <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
+            <FaUsers /> Instructors
           </li>
         </Link>
         <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">

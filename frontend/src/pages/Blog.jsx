@@ -93,10 +93,12 @@
                   ))}
             </div>
           <div className="max-w-8xl mx-auto px-8">
+         
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mt-30">
         
             {filteredBlogs.map((blog) => (
-            <div
+             <Link to={`/blogdetail/${blog.blog_id}`}>
+               <div
               key={blog.blog_id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden relative group"
               >
@@ -140,8 +142,11 @@
                         </div> */}
               </div>
               </div>
+              </Link>
           ))}
+          
           </div>
+          
           </div>
         </div>
       );

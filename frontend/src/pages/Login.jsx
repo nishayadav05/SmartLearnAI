@@ -2,40 +2,53 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Api from "../services/Api";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
+const handleLogin = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await Api.post("/login", formData);
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("password", password);
 
-      if (res.data.success) {
-        // Store JWT and user info in localStorage
-        // localStorage.setItem("token", res.data.token); // JWT
-        // localStorage.setItem("fullName", res.data.user.fullname);
-        // localStorage.setItem("email", res.data.user.email);
+  try {
+    const res = await Api.post("/login", formData);
 
-        localStorage.setItem("token", res.data.token);
+    console.log("Login Response:", res.data);
 
-        alert("Login Successful!");
-        navigate("/"); // redirect to dashboard/home
-      } else {
-        alert("Invalid Credentials!");
+    if (res.data.success) {
+
+      localStorage.setItem("token", res.data.token);
+
+      //  FIXED HERE (no nested user assumption)
+      const user_id = res.data.user_id;  
+
+      if (!user_id) {
+        alert("User ID not found in response!");
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      alert("Login Failed. Please try again.");
+
+      const studentRes = await Api.get(`/get_student_by_user/${user_id}`);
+
+      const stud_id = studentRes.data.stud_id;
+
+      navigate(`/exampleprofile/${stud_id}`);
+
+    } else {
+      alert("Invalid Credentials!");
     }
-  };
+
+  } catch (err) {
+    console.error(err);
+    alert("Login Failed");
+  }
+};
 
   return (
     <div>

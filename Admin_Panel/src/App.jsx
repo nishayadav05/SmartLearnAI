@@ -1,6 +1,6 @@
 import './App.css'
-import Dashboard from './components/DashBoard'
-import Student from './components/Student'
+import Dashboard from './pages/DashBoard'
+import Student from './pages/Student'
 import { Routes, Route } from 'react-router-dom';
 
 function App() {

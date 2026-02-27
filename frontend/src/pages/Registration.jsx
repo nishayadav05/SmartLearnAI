@@ -20,11 +20,9 @@ function Registration() {
   const [email,setemail] = useState("");
   const [password,setpassword] = useState("");
   const [confirmpassword,setconfirmpassword]=useState("");
-  // const [Error,setError]=useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [matchError, setMatchError] = useState("");
-
 
 
  
