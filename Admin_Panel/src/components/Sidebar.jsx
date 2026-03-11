@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 import {
   FaHome,
@@ -11,6 +12,10 @@ import {
   FaMapMarkedAlt
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+=======
+import { FaHome, FaChartBar, FaShoppingCart, FaUsers } from "react-icons/fa";
+import { Link } from "react-router-dom";
+>>>>>>> a34479f8775bb2e966ef613789c7933da6d02f84
 
 function Sidebar() {
 
