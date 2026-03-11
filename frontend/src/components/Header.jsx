@@ -1,19 +1,22 @@
 import { useState } from "react";
 // import Course from "./Course";
 import {Contact, Search} from "lucide-react"
-import { Link } from "react-router-dom";
+import Api from "../services/Api";
+import { Link ,useNavigate} from "react-router-dom";
 function Header(){
       const [open, setOpen] = useState(false);
       const [openc, setOpenc] = useState(false);
+      const navigate = useNavigate();
+      
+
+      const isLoggedIn = !!localStorage.getItem("token");
       return (
       <div>
             <header class="bg-white">
             <nav aria-label="Global" class="w-full flex items-center justify-between px-6 py-4 shadow-sm bg-white">
-            {/* <nav className="w-full flex items-center justify-between py-4px-6  shadow-sm bg-white"> */}
             <div class="flex items-center gap-6">
                   <a href="#" class="">
                   <span class="text-2xl text-blue-700" >SmartLearn.AI</span>
-                  {/* <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="" class="h-8 w-auto" /> */}
                   </a>
             </div>
                         <li
@@ -32,8 +35,8 @@ function Header(){
                         {openc && (
       <div
             className="absolute left-0 mt-5 w-[1100px] bg-white shadow-xl rounded-xl p-6 border border-gray-200 animate-dropdown z-30"
-            onMouseEnter={() => setOpenc(true)}   // ⬅ KEEP OPEN when mouse enters grid
-            onMouseLeave={() => setOpenc(false)}  // ⬅ CLOSE ONLY when mouse leaves entire panel
+            onMouseEnter={() => setOpenc(true)}   // KEEP OPEN when mouse enters grid
+            onMouseLeave={() => setOpenc(false)}  // CLOSE ONLY when mouse leaves entire panel
             >
             <div className="grid grid-cols-6 gap-8">
         {/* Column 1 */}
@@ -126,22 +129,17 @@ function Header(){
       </li>
 
 
-            {/* Search bar */}
-            {/* <div className="items-center riunded-full rounded-xl shadow border px-30 py-2 hidden md:flex">
-                  <Search className="text-grey-500"></Search>
-                  <input type="text" placeholder="Search for anything" className="ml-2 w-full outline-none text-sm"></input>
-            </div> */}
             <div className="flex items-left rounded-full shadow border px-30 py-2 hidden md:flex">
                   <Search className="text-gray-500" />
                   <input type="text" placeholder="Search for anything"
                   className="ml-2 w-full outline-none text-sm"/>
             </div>
       
-            <div class="flex lg:hidden">
-                  <button type="button" command="show-modal" commandfor="mobile-menu" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+            <div className="flex lg:hidden">
+                  <button type="button" command="show-modal" commandfor="mobile-menu" className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
                   <span class="sr-only">Open main menu</span>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6">
-                  <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   </button>
             </div>
@@ -151,6 +149,7 @@ function Header(){
             <Link to="/" class="text-sm/6 font-semibold text-gray-900">Home</Link>
             <Link to="/about" class="text-sm/6 font-semibold text-gray-900">About</Link>
             <Link to="/blog" class="text-sm/6 font-semibold text-gray-900">Blog</Link>
+            <Link to="/allcourses" class="text-sm/6 font-semibold text-gray-900">All Courses</Link>
             <Link to="/contact" class="text-sm/6 font-semibold text-gray-900">Contact</Link>
             <a href="#" class="text-sm/6 font-semibold text-gray-900">
                   {/* <Link to="/Course" element={<Course/>} className="flex items-center gap-2">Course</Link> */}
@@ -172,11 +171,10 @@ function Header(){
                   </button>
 
                   {/* Dropdown Menu */}
-                  {open && (
+                  {/* {open && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
                   <ul>
                         <li className="px-4 py-2 hover:bg-gray-200 flex items-center gap-2">
-                              {/* <Link to="/Profile" className="flex items-center gap-2"> */}
                               <Link to="/exampleprofile/"  className="flex items-center gap-2">                
                               <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -193,7 +191,6 @@ function Header(){
                         <hr />
                         <li className="px-4 py-2 hover:bg-gray-200">
                         <Link to="/login" className="flex items-center gap-2">
-                        {/* <Link to="/login" element={<Login/>} className="flex items-center gap-2"> */}
                                     <svg className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
                                     <path d="M20 12h-13l3 -3m0 6l-3 -3" />
@@ -201,6 +198,49 @@ function Header(){
                                     Login
                               </Link>
                         </li>
+                  </ul>
+                  </div>
+                  )} */}
+
+
+                  {open && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
+                  <ul>
+
+                        {isLoggedIn ? (
+                        <>
+                        <li className="px-4 py-2 hover:bg-gray-200">
+                              <Link to="/exampleprofile/">Profile</Link>
+                        </li>
+
+                        <li
+                              className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                              onClick={() => {
+                              localStorage.removeItem("token");
+                              // window.location.reload();
+                              navigate("/");
+
+                              }}
+                        >
+                              Logout
+                        </li>
+                        <hr></hr>
+                        <li className="px-4 py-2 hover:bg-gray-200">
+                              <Link to="/login/">Login</Link>
+                        </li>
+                        </>
+                        ) : (
+                        <>
+                        <li className="px-4 py-2 hover:bg-gray-200">
+                              <Link to="/login">Login</Link>
+                        </li>
+
+                        <li className="px-4 py-2 hover:bg-gray-200">
+                              <Link to="/registration">Registration</Link>
+                        </li>
+                        </>
+                        )}
+
                   </ul>
                   </div>
                   )}

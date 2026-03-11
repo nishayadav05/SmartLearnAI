@@ -1,41 +1,97 @@
-import { FaHome, FaChartBar, FaShoppingCart, FaUsers } from "react-icons/fa";
-import { Link } from "react-router";
+
+import {
+  FaHome,
+  FaUsers,
+  FaChalkboardTeacher,
+  FaEnvelope,
+  FaBookOpen,
+  FaBlog,
+  FaUserGraduate,
+  FaCity,
+  FaMapMarkedAlt
+} from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
+
+  const menuClass = ({ isActive }) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300
+    ${
+      isActive
+        ? "bg-blue-600 text-white shadow-lg scale-[1.02]"
+        : "text-gray-400 hover:bg-gray-700 hover:text-white hover:translate-x-1"
+    }`;
+
   return (
-    <div className="w-64 h-screen bg-white shadow-lg fixed">
-      <h1 className="text-2xl font-bold p-6 text-blue-600">SmartLearn.AI</h1>
+    <div className="w-64 h-screen bg-gray-900 border-r border-gray-800 fixed flex flex-col">
 
-      <ul className="space-y-2 px-4">
-        <Link to="/">
-          <li className="flex items-center gap-3 p-3 rounded-lg bg-blue-100 text-blue-600 cursor-pointer">
-            <FaHome /> Dashboard
-          </li>
-        </Link>
+      {/* Logo */}
+      <div className="p-6 border-b border-gray-800">
+        <h1 className="text-2xl font-bold text-blue-500 tracking-wide">
+          SmartLearn.AI
+        </h1>
+        <p className="text-xs text-gray-400 mt-1">
+          AI Learning Dashboard
+        </p>
+      </div>
 
-        <Link to="/student">
-          <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-            <FaUsers /> Users
-          </li>
-        </Link>
-        <Link to="/student">
-          <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-            <FaUsers /> Students
-          </li>
-        </Link>
-        <Link to="/student">
-          <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-            <FaUsers /> Instructors
-          </li>
-        </Link>
-        <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-          <FaChartBar /> Analytics
-        </li>
-        <li className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-          <FaUsers /> Customers
-        </li>
+      {/* Menu */}
+      <ul className="space-y-2 px-4 mt-6 flex-1 overflow-y-auto">
+
+        <NavLink to="/" className={menuClass}>
+          <FaHome className="text-lg" />
+          Dashboard
+        </NavLink>
+
+        <NavLink to="/users" className={menuClass}>
+          <FaUsers className="text-lg" />
+          Users
+        </NavLink>
+
+        <NavLink to="/student" className={menuClass}>
+          <FaUserGraduate className="text-lg" />
+          Students
+        </NavLink>
+
+        <NavLink to="/instructors" className={menuClass}>
+          <FaChalkboardTeacher className="text-lg" />
+          Instructors
+        </NavLink>
+
+        <NavLink to="/courses" className={menuClass}>
+          <FaBookOpen className="text-lg" />
+          Courses
+        </NavLink>
+
+        <NavLink to="/blogs" className={menuClass}>
+          <FaBlog className="text-lg" />
+          Blogs
+        </NavLink>
+
+        <NavLink to="/contacts" className={menuClass}>
+          <FaEnvelope className="text-lg" />
+          Contacts
+        </NavLink>
+
+        <NavLink to="/cities" className={menuClass}>
+          <FaCity className="text-lg" />
+          Cities
+        </NavLink>
+
+        <NavLink to="/states" className={menuClass}>
+          <FaMapMarkedAlt className="text-lg" />
+          States
+        </NavLink>
+
       </ul>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">
+        © 2026 SmartLearn.AI
+      </div>
+
     </div>
   );
 }
+
 export default Sidebar;

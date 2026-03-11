@@ -3,47 +3,6 @@ import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// const blogs = [
-//   {
-//     id: "1",
-//     title: "How AI is Changing Online Learning",
-//     desc: "Discover how artificial intelligence is revolutionizing personalized education platforms.",
-//     author: "Nirjala Vegad",
-//     date: "Jan 30, 2026",
-//     category: "AI",
-//     image: "/images/.jpeg",
-//     content: [
-//       {
-//         type: "paragraph",
-//         text: "Artificial Intelligence is no longer a futuristic concept. Today, AI is actively transforming how students learn."
-//       },
-//       {
-//         type: "heading",
-//         text: "Personalized Learning"
-//       },
-//       {
-//         type: "paragraph",
-//         text: "AI analyzes student behavior and learning speed to provide customized content."
-//       },
-//       {
-//         type: "heading",
-//         text: "Smart Assessments"
-//       },
-//       {
-//         type: "paragraph",
-//         text: "AI-powered systems automatically evaluate quizzes and assignments with instant feedback."
-//       },
-//       {
-//         type: "heading",
-//         text: "Virtual Tutors"
-//       },
-//       {
-//         type: "paragraph",
-//         text: "Chatbots and AI tutors act as 24/7 learning assistants."
-//       }
-//     ]
-//   }
-// ];
 const menuItems = [
   "Instructors",
   "Learners",
@@ -68,32 +27,16 @@ function BlogDetail() {
   return (
     <div className="mx-auto ">
 
-        <div className="w-full ">
-        {/* Top Menu */}
-          {/* <div className="flex border-b">
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => setActive(index)}
-                className={`px-6 py-3 text-sm font-medium transition
-                  ${
-                    active === index
-                      ? "border-b-2 border-purple-600 text-purple-700"
-                      : "text-gray-600 hover:text-black"
-                  }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div> */}
-        {/* <!-- Container --> */}
+    <div className="w-full  mt-30">
+
+      {/* <!-- Container --> */}
       <div class="ml-20 mt-10">
 
         <div className="flex text-black-500">
            {/* <!-- Blog Image --> */}
           <span>
-            <div class="image-holder"  >
-              <img src={`http://localhost:8000/blogimages/${blog.blogimage}`}
+            <div class="image-holder"  className="w-[400px] h-[600px] overflow-hidden rounded-xlw" >
+              <img src={"http://localhost:8000/BlogImages/"+blog.blogimage}
                   alt="Blog Image"
                   class="img-set"
                   className="w-[400px] h-[600px] overflow-hidden rounded-xl"/>
@@ -104,6 +47,7 @@ function BlogDetail() {
               <div className="ml-10">
                  {/* <!-- Blog Title --> */}
                 <h1 class="text-4xl font-bold text-gray-900 leading-tight mb-6 ">{blog.blogtitle}</h1>
+                <h5 class=" font-bold text-gray-900 ">{blog.blogername}</h5>
                 <p className="text-bold">{new Date(blog.blogdate).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "long",
@@ -136,8 +80,7 @@ function BlogDetail() {
         </div>
       </div>
     </div>
-    </div>
-
+  </div>
   );
 }
 export default BlogDetail;

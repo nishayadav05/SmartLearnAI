@@ -4,16 +4,9 @@ from database import engine,SessionLocal
 from sqlalchemy.orm import Session
 from routes import blog
 from auth import hash_password,verify_password,create_access_token,decode_access_token
-
+from database import get_db
 
 router=APIRouter(tags=["Users"])
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
         
 # with hashed
 @router.post("/stud_registration")
@@ -46,8 +39,8 @@ def register_user(
     return {"message": "Registration successful"}
 
 
-@router.get("/student_display")
-def student_display(db:Session=Depends(get_db)):
+@router.get("/users_display")
+def users_display(db:Session=Depends(get_db)):
       data = db.query(models.Users).order_by(models.Users.user_id.asc()).all()
       return data
 
@@ -102,6 +95,7 @@ def get_me(
     ).first()
 
     return {
+        "user_id":user.user_id,
         "fullname": user.fullname,
         "email": user.email
     }

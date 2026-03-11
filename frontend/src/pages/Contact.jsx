@@ -1,4 +1,54 @@
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Api from "../services/Api";
+import { useNavigate } from "react-router-dom";
+
 function Contact(){
+    // const { user_id } = useParams();
+    const [user, setUser] = useState(null);
+    const [message,setMessage] = useState("");
+    // const [formData, setFormData] = useState({
+    //     fullname: "",
+    //     email:""
+    // });
+     useEffect(() => {
+      Api.get("/me")
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch((err) => console.log(err));
+    }, []);
+
+
+   const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const user_id = localStorage.getItem("user_id");
+
+        // ✅ Check if user logged in
+        if (!user_id) {
+            alert("Please login first");
+            navigate("/login");   // redirect to login page
+            return;
+        }
+
+        try {
+            await Api.post("/insert_contact_msg", {
+                user_id: user_id,
+                message: message
+            });
+
+            alert("Message sent successfully");
+            setMessage("");
+
+        } catch (error) {
+            console.log(error);
+            alert("Message sending failed");
+        }
+    };
+
     return (
         <div>
             <section class="bg-blue-50 dark:bg-white" id="contact">
@@ -39,7 +89,7 @@ function Contact(){
                                 <li class="flex">
                                     <div class="flex h-10 w-10 items-center justify-center rounded bg-blue-900 text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
                                             stroke-linejoin="round" class="h-6 w-6">
                                             <path
                                                 d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2">
@@ -74,27 +124,28 @@ function Contact(){
                             </ul>
                         </div>
                         <div class="card h-fit max-w-6xl p-5 md:p-12" id="form">
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <div class="mb-6">
                                     <div class="mx-0 mb-1 sm:mb-4">
                                         <div class="mx-0 mb-1 sm:mb-4">
                                             <label class="pb-1 text-xs uppercase tracking-wider" ></label>
-                                            <input type="text" autoComplete="off" placeholder="Your name" class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0" name="c_name" required/>
+                                            <input type="text" autoComplete="off" placeholder="Your name" value={user?.fullname||""}  class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0"/>
                                         </div>
                                         <div class="mx-0 mb-1 sm:mb-4">
                                             <label class="pb-1 text-xs uppercase tracking-wider"></label>
-                                            <input type="email"  autoComplete="off"  placeholder="Your email address" class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0" name="c_email" required/>
+                                            <input type="email"  autoComplete="off"  placeholder="Your email address" value={user?.email||""} class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0"/>
                                         </div>
                                     </div>
                                     <div class="mx-0 mb-1 sm:mb-4">
                                         <label class="pb-1 text-xs uppercase tracking-wider"></label>
-                                        <textarea  name="c_message" cols="30" rows="5" autoComplete="off" placeholder="Write your message..." class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0" required></textarea>
+                                        <textarea  name="c_message" cols="30" rows="5" autoComplete="off" placeholder="Write your message..." class="mb-2 w-full rounded-md border border-gray-400 py-2 pl-2 pr-4 shadow-md dark:text-gray-800 sm:mb-0" onChange={(e)=>setMessage(e.target.value)} required></textarea>
                                     </div>
                                 </div>
                                 <div class="text-center">
                                     <button type="submit" class="w-full bg-blue-800 text-white px-6 py-3 font-xl rounded-md sm:mb-0" name="send_msg">Send Message</button>
                                 </div>
                             </form>
+                            <h3>{message}</h3>
                         </div>
                     </div>
                 </div>

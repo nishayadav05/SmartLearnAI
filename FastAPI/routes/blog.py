@@ -2,26 +2,19 @@ from  fastapi import FastAPI, APIRouter,Depends,Form,File,UploadFile,HTTPExcepti
 from typing import Annotated,Literal
 from pydantic import Field
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import get_db
 import shutil
 import models
 
 
-UPLOAD_DIR="blogimages"
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+UPLOAD_DIR="images/BlogImages"
 
 router=APIRouter(tags=["Blog"])
 
 @router.post("/blog")
 def blog(
     blogername: str = Form(...),
-    blogerrole: Literal["Instructors","Learner","Employees"]=Form(...),
+    blogerrole: Literal["Instructor","Learner","Employees"]=Form(...),
     blogtitle :  str =Form(...),
     blogdescription : str =Form(...),
     blogimage: UploadFile =File(...),
@@ -30,6 +23,7 @@ def blog(
     file_path = f"{UPLOAD_DIR}/{blogimage.filename}"
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(blogimage.file, buffer)
+
 
     db_blog = models.Blog(
         blogername=blogername,

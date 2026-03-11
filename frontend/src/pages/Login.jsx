@@ -19,15 +19,22 @@ const handleLogin = async (e) => {
 
   try {
     const res = await Api.post("/login", formData);
-
+    localStorage.setItem("user_id", res.data.user_id);
     console.log("Login Response:", res.data);
 
+    const user_id = res.data.user_id
+
+    const studentRes = await Api.get(`/get_student_by_user/${user_id}`)
+
+navigate(`/profile/${studentRes.data.stud_id}`)
+
     if (res.data.success) {
-
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user_id", res.data.user_id);
 
-      //  FIXED HERE (no nested user assumption)
-      const user_id = res.data.user_id;  
+      const user_id = res.data.user_id;
+      console.log("Stored user_id:", user_id);
+      localStorage.setItem("token", res.data.token); 
 
       if (!user_id) {
         alert("User ID not found in response!");
@@ -37,7 +44,7 @@ const handleLogin = async (e) => {
       const studentRes = await Api.get(`/get_student_by_user/${user_id}`);
 
       const stud_id = studentRes.data.stud_id;
-
+      
       navigate(`/exampleprofile/${stud_id}`);
 
     } else {
