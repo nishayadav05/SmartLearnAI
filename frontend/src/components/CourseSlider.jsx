@@ -1,47 +1,31 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import Api from "../services/Api";
+import { Link } from "react-router-dom";
 
-const videos = [
-  {
-    id: 1,
-    title: "React for Beginners",
-    desc: "Learn React from scratch with real projects",
-    rating: 4.7,
-    author: "John Doe",
-    channel: "Code Academy",
-    tag: "Best Seller",
-    src: "/videos/react.mp4",
-  },
-  {
-    id: 2,
-    title: "Tailwind Masterclass",
-    desc: "Build modern UI using Tailwind CSS",
-    rating: 4.5,
-    author: "Sarah Khan",
-    channel: "UI School",
-    tag: "Premium",
-    src: "/videos/tailwind.mp4",
-  },
-  {
-    id: 3,
-    title: "Node.js Complete Guide",
-    desc: "Backend development with Node.js",
-    rating: 4.8,
-    author: "Alex Smith",
-    channel: "Dev Hub",
-    tag: "Best Seller",
-    src: "/videos/node.mp4",
-  },
-];
+export default function CourseSlider() {
 
-const loopData = [...videos, ...videos];
-
-export default function VideoScroll() {
+  const [videos, setVideos] = useState([]);
   const scrollRef = useRef(null);
 
+  // Fetch courses
+  useEffect(() => {
+    Api.get("/course_display")
+      .then((res) => {
+        setVideos(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const loopData = [...videos, ...videos];
+
+  // Auto scroll
   useEffect(() => {
     const interval = setInterval(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollLeft += 1;
+
         if (
           scrollRef.current.scrollLeft >=
           scrollRef.current.scrollWidth / 2
@@ -50,8 +34,9 @@ export default function VideoScroll() {
         }
       }
     }, 20);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [videos]);
 
   return (
     <div className="w-full bg-gray-100 p-6">
@@ -59,67 +44,50 @@ export default function VideoScroll() {
         Trending Courses
       </h2>
 
-      <div
-        ref={scrollRef}
-        className="flex gap-6 overflow-x-hidden hide-scroll"
-      >
+      <div ref={scrollRef} className="flex gap-6 overflow-x-hidden">
+
         {loopData.map((item, i) => (
-          <div
-            key={i}
-            className="min-w-[280px] bg-white rounded-xl shadow-lg overflow-hidden"
-          >
-            {/* Video */}
+          <Link
+                to={`/coursedisplay/${item.course_id}`}
+                // key={index}
+          //       key={item.course_id}
+          //       className="block bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition duration-300 cursor-pointer"
+              >
+          <div key={i} className="min-w-[280px] bg-white rounded-xl shadow-lg overflow-hidden">
+
             <div className="relative">
-              <video
-                src={item.src}
-                muted
-                loop
-                autoPlay
+              <img
+                src={"http://localhost:8000/Thumbnail/"+item.thumbnail}
+                alt={item.course_title}
                 className="w-full h-40 object-cover"
               />
 
-              {/* Tag */}
               <span className="absolute top-2 left-2 bg-yellow-500 text-xs px-2 py-1 rounded font-bold">
-                {item.tag}
+                {item.category}
               </span>
             </div>
 
-            {/* Info */}
             <div className="p-3">
-              <h3 className="font-semibold">{item.title}</h3>
+              <h3 className="font-semibold">{item.course_title}</h3>
+
               <p className="text-sm text-gray-600">
                 {item.desc}
               </p>
 
-              <div className="flex justify-between items-center mt-2 text-sm">
-                <span>⭐ {item.rating}</span>
-                <span className="text-gray-500">
-                  {item.author}
-                </span>
+              <div className="flex justify-between mt-2 text-sm">
+                <span>{item.skill_level}</span>
+                <span className="text-gray-500">{item.author}</span>
               </div>
 
               <p className="text-xs text-gray-500">
-                {item.channel}
+                {item.prerequisites}
               </p>
             </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Center arrows */}
-      <div className="flex justify-center gap-4 mt-4 text-3xl">
-        <span
-          onClick={() => (scrollRef.current.scrollLeft -= 300)}
-          className="cursor-pointer hover:scale-125"
-        >
-          ‹
-        </span>
-        <span
-          onClick={() => (scrollRef.current.scrollLeft += 300)}
-          className="cursor-pointer hover:scale-125"
-        >
-          ›
-        </span>
+          </div>
+          </Link>
+        ))}
+
       </div>
     </div>
   );

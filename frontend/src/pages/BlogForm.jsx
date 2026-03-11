@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Api from "../services/Api";  
+<<<<<<< HEAD
+ 
+=======
 import { supabase } from "../supabase"; 
+>>>>>>> a34479f8775bb2e966ef613789c7933da6d02f84
 
 function BlogForm() {
 
@@ -13,6 +17,30 @@ function BlogForm() {
   const [imagePreview, setImagePreview] = useState("");
   const navigate = useNavigate();
 
+<<<<<<< HEAD
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!blogimage) {
+    alert("Please select image");
+    return;
+  }
+
+
+  //  Create FormData
+  const formData = new FormData();
+  formData.append("blogername", blogername);
+  formData.append("blogerrole", blogerrole);
+  formData.append("blogtitle", blogtitle);
+  formData.append("blogdescription", blogdescription);
+  formData.append("blogimage", blogimage); // only filename string
+
+
+  try {
+    await Api.post("/blog", formData,{
+      headers:{"Content-Type":"multipart/form-data"}});
+
+=======
   // ---------- SUPABASE UPLOAD FUNCTION ----------
 const uploadImage = async (file) => {
   const fileName = file.name;
@@ -82,6 +110,7 @@ const uploadImage = async (file) => {
 
   try {
     await Api.post("/blog", formData);   // 👈 IMPORTANT
+>>>>>>> a34479f8775bb2e966ef613789c7933da6d02f84
     alert("Inserted successfully!");
     navigate("/blog");
   } catch (error) {

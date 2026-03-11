@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SideBar from "../components/SideBar";
 import Api from "../services/Api";
-import { supabase } from "../supabase";
 import {
   FiUpload,
   FiVideo,
@@ -28,92 +27,6 @@ function CourseUpload()
   // const [formData, setFormData] = useState();
   const navigate=useNavigate();
 
-    
-  // ---------- SUPABASE UPLOAD FUNCTION ----------
-
-  const uploadImage = async (file) => {
-  const fileName = `${file.name}`;
-
-  const { error } = await supabase.storage
-    .from("course_thumbnail")
-    .upload(fileName, file);
-
-  if (error) {
-    console.error("Upload error:", error);
-    return null;
-  }
-
-  // Get PUBLIC URL
-  const { data } = supabase.storage
-    .from("course_thumbnail")
-    .getPublicUrl(fileName);
-
-  return fileName  // ← THIS is what backend expects
-};
-  
-//   const uploadImage = async (file) => 
-//   {
-//   const fileName = `${Date.now()}_${file.name}`;
-
-//   const { data, error } = await supabase.storage
-//     .from("course_thumbnail")
-//     .upload(fileName, file, {
-//       cacheControl: "3600",
-//       upsert: false,
-//     });
-
-//   if (error) {
-//     console.error("Upload error:", error);
-//     return null;
-//   }
-
-//   return data;
-// };
-
-//video upload
-
-const uploadVideo = async (file) => {
-  const fileName = `${file.name}`;
-
-  const { error } = await supabase.storage
-    .from("course_videos")
-    .upload(fileName, file);
-
-  if (error) {
-    console.error("Video upload error:", error);
-    return null;
-  }
-
-  const { data } = supabase.storage
-    .from("course_videos")
-    .getPublicUrl(fileName);
-
-  return fileName;
-};
-
-// const uploadVideo = async (file) => {
-//   const fileName = `${Date.now()}_${file.name}`;
-//   // const { data, error } = await supabase.storage
-//   // .from("course_videos")
-//   // .upload(`videos/${Date.now()}_${file.name}`, file);
-
-//   const { data, error } = await supabase.storage
-//     .from("course_videos")
-//     .upload(fileName, file);
-
-//   if (error) {
-//     console.error("Video upload error", error);
-//     return null;
-//   }
-
-//   const { data: urlData } = supabase.storage
-//     .from("course_videos")
-//     .getPublicUrl(fileName);
-
-//   return fileName;
-// };
-
-
   const addModule = () => {
     setModules([...modules, { title: "", lessons: [] }]);
   };
@@ -133,106 +46,41 @@ const uploadVideo = async (file) => {
     }, 200);
   };
 
-    // ---------- SUBMIT FORM ----------
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!thumbnail || !video) {
-      alert("Please select image");
-      return;
-    }
+  if (!thumbnail || !video) {
+    alert("Please select thumbnail and video");
+    return;
+  }
 
-    // Step 1: Upload to Supabase
-    const imageUrl = await uploadImage(thumbnail);
-    if (!imageUrl) return;
+  const formData = new FormData();
 
-     const videoUrl = await uploadVideo(video);
-     if (!videoUrl) return;
+  formData.append("course_title", course_title);
+  formData.append("category", category);
+  formData.append("skill_level", skill_level);
+  formData.append("prerequisites", prerequisites);
+  formData.append("description", description);
+  formData.append("tag", tag);
+  formData.append("course_price", course_price);
 
-    // Step 2: Send only URL to backend
-    const payload = {
-      course_title,
-      category,
-      skill_level,
-      prerequisites,
-      description,
-      tag,
-      thumbnail: imageUrl,
-      video: videoUrl, 
-      course_price
-    };
+  formData.append("thumbnail", thumbnail);
+  formData.append("video", video);
 
-    try {
-      await Api.post("/course_upload", payload);
-      alert("Inserted successfully!");
-      navigate("/");
-    } catch (error) {
-      console.error(error.response?.data);
-      alert("Insert Failed");
-    }
-  };  
+  try {
+    await Api.post("/course_upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-  // const handleSubmit =async (e) => {
-  //   e.preventDefault();
-  //   const formData=new FormData(); 
-  //           formData.append("course_title",course_title);
-  //           formData.append("category", category);
-  //           formData.append("skill_level",skill_level);
-  //           formData.append("prerequisites",prerequisites);
-  //           formData.append("description",description);
-  //           formData.append("tag",tag);
-  //           formData.append("thumbnail",thumbnail);
-  //           formData.append("video",video);
-                      
-  //     try {
-  //       await Api.post("/course_upload", formData, {
-  //         headers: { "Content-Type": "multipart/form-data" }
-  //       });
-  //       alert("Inserted successfully!");
-  //       navigate("/course_upload");
-
-  //     } catch (error) {
-  //         console.error(error.response?.data);
-  //         alert("Insert Failed");
-  //     }
-
-  // for (let pair of formData.entries()) {
-  // console.log(pair[0], pair[1]);}
-
-  // };
-//   const handleSubmit = async (e) => {
-//   e.preventDefault();
-
-//   const fd = new FormData();
-//   fd.append("course_title", course_title);
-//   fd.append("category", category);
-//   fd.append("skill_level", skill_level);
-//   fd.append("prerequisites", prerequisites);
-//   fd.append("description", description);
-//   fd.append("tag", tag);
-//   fd.append("thumbnail", thumbnail);
-//   fd.append("video", video);
-//   fd.append("course_price",course_price)
-
-//   try {
-//     await Api.post("/course_upload", fd, {
-//       headers: { "Content-Type": "multipart/form-data" }
-//     });
-//     alert("Inserted successfully!");
-//     navigate("/");
-//   } catch (error) {
-//     console.error(error.response?.data);
-//     console.log("ERROR:", error);
-
-//     alert("Insert Failed");
-//   }
-
-//   // PRINT VALUES
-//   for (let pair of fd.entries()) {
-//     console.log(pair[0], pair[1]);
-//   }
-// };
-
+    alert("Inserted successfully!");
+    navigate("/");
+  } catch (error) {
+    console.log(error.response?.data);
+    alert("Insert Failed");
+  }
+};
 
   // console.log("skill_level", skill_level);
   return (
@@ -450,7 +298,7 @@ const uploadVideo = async (file) => {
           >
             <FiVideo size={40} className="text-blue-600 mb-3" />
             <p className="text-gray-600">Click to upload lesson videos</p>
-                 {
+                 {/* {
                   videoPreview && (
                     <video
                       src={videoPreview}
@@ -459,7 +307,7 @@ const uploadVideo = async (file) => {
                       className="mt-4 rounded-lg shadow"
                     ></video>
                   )
-                }
+                } */}
           </div>
         </div>
         {/* MODULE BUILDER */}

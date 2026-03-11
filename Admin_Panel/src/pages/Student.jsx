@@ -1,80 +1,81 @@
 import Sidebar from "../components/Sidebar";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Api from "../Api";
-
-
-const data = Array.from({ length: 25 }, (_, i) => ({
-  id: i + 1,
-  product: `Product ${i + 1}`,
-  price: `$${(i + 1) * 10}`,
-  status: i % 2 === 0 ? "Active" : "Pending",
-}));
 
 function Student() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
-  // const lastIndex = currentPage * rowsPerPage;
-  // const firstIndex = lastIndex - rowsPerPage;
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const [studdata, setstuddata] = useState([]);
 
-  const [studdata,setstuddata] = useState([])
-  const fetchdata = async () =>{
-    const response = await Api.get("/student_display");
+  const fetchdata = async () => {
+    const response = await Api.get("/students_display");
     setstuddata(response.data);
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchdata();
-  },[])
+  }, []);
+
+  // Pagination
+  const totalPages = Math.ceil(studdata.length / rowsPerPage);
+  const lastIndex = currentPage * rowsPerPage;
+  const firstIndex = lastIndex - rowsPerPage;
+  const currentStudents = studdata.slice(firstIndex, lastIndex);
 
   return (
-    <div className="flex">
+    <div className="flex bg-gray-900 min-h-screen text-gray-200">
       <Sidebar />
 
       <div className="ml-64 p-6 w-full">
-        <h1 className="text-2xl font-bold mb-6">Students</h1>
+        <h1 className="text-3xl font-bold mb-6 text-white">Students</h1>
 
-        <div className="bg-white rounded-xl shadow p-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="text-left border-b">
-                <th className="p-3">ID</th>
-                <th className="p-3">Full Name</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Password</th>
-              </tr>
-            </thead>
+        <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
 
-            <tbody>
-              { studdata.map((data) => (
-                <tr key={data.stud_id} className="border-b hover:bg-gray-50">
-                  <td className="p-3">{data.stud_id}</td>
-                  <td className="p-3">{data.fullname}</td>
-                  <td className="p-3">{data.email}</td>
-                  <td className="p-3">{data.password}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        data.status === "Active"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-yellow-100 text-yellow-600"
-                      }`}
-                    >
-                      {data.status}
-                    </span>
-                  </td>
+          {/* TABLE */}
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse min-w-[900px]">
+              <thead>
+                <tr className="text-left border-b border-gray-700 text-gray-400 uppercase text-sm">
+                  <th className="p-3">Student ID</th>
+                  <th className="p-3">User ID</th>
+                  <th className="p-3">Age</th>
+                  <th className="p-3">Education</th>
+                  <th className="p-3">State ID</th>
+                  <th className="p-3">City ID</th>
+                  <th className="p-3">Skills</th>
+                  <th className="p-3">Languages</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {currentStudents.map((data) => (
+                  <tr
+                    key={data.stud_id}
+                    className="border-b border-gray-700 hover:bg-gray-700 transition"
+                  >
+                    <td className="p-3 font-semibold text-blue-400">
+                      {data.stud_id}
+                    </td>
+                    <td className="p-3">{data.user_id}</td>
+                    <td className="p-3">{data.age}</td>
+                    <td className="p-3">{data.education}</td>
+                    <td className="p-3">{data.state_id}</td>
+                    <td className="p-3">{data.city_id}</td>
+                    <td className="p-3">{data.skills}</td>
+                    <td className="p-3">{data.language}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* PAGINATION */}
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="flex justify-end gap-2 mt-6">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-              className="px-4 py-1 border rounded disabled:opacity-50"
+              className="px-4 py-1 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-40"
             >
               Prev
             </button>
@@ -86,7 +87,7 @@ function Student() {
                 className={`px-3 py-1 rounded ${
                   currentPage === i + 1
                     ? "bg-blue-600 text-white"
-                    : "border"
+                    : "bg-gray-700 hover:bg-gray-600"
                 }`}
               >
                 {i + 1}
@@ -96,13 +97,16 @@ function Student() {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-              className="px-4 py-1 border rounded disabled:opacity-50">
+              className="px-4 py-1 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-40"
+            >
               Next
             </button>
           </div>
+
         </div>
       </div>
     </div>
   );
 }
+
 export default Student;

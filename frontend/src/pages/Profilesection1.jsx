@@ -122,29 +122,41 @@ function Profilesection1() {
   
  const handleUpdate = async () => {
 
-  if (!user_id) {
-    alert("User ID missing!");
-    return;
-  }
+      if (!stud_id) {
+      alert("User ID missing!");
+      return;
+    }
+
+
+   const payload = {
+    age: formData.age ? Number(formData.age) : null,
+    education: formData.education || null,
+    state_id: formData.state_id ? Number(formData.state_id) : null,
+    city_id: formData.city_id ? Number(formData.city_id) : null,
+    skills: formData.skills.length ? formData.skills.join(",") : null,
+    language: formData.languages.length ? formData.languages.join(",") : null,
+  };
+
+  console.log("Sending Data:", payload);
 
   try {
 
-    await Api.post(`/insert_update_profile/${user_id}`, {
-      age: Number(formData.age),
-      education: formData.education,
-      state_id: Number(formData.state_id),
-      city_id: Number(formData.city_id),
-      skills: formData.skills.join(","), 
-      language: formData.languages.join(",")
-    });
+  await Api.post(`/insert_update_profile/${stud_id}`, {
+    age: formData.age ? Number(formData.age) : null,
+    education: formData.education || null,
+    state_id: formData.state_id ? Number(formData.state_id) : null,
+    city_id: formData.city_id ? Number(formData.city_id) : null,
+    skills: formData.skills.length ? formData.skills.join(",") : null,
+    language: formData.languages.length ? formData.languages.join(",") : null
+  });
 
-    alert("Updated Successfully!");
-    setIsEditing(false);
+  alert("Updated Successfully!");
+  setIsEditing(false);
 
-  } catch (err) {
-    console.log(err.response?.data);
-    alert("Update Failed");
-  }
+} catch (err) {
+  console.log(err.response?.data);
+  alert("Update Failed");
+}
 };
 
   // ================= OPTIONS =================
@@ -273,7 +285,7 @@ function Profilesection1() {
                   Cancel
                 </button>
 
-                <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" > Save </button>
+                <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" >Save</button>
               </div>
             )}
           </div>

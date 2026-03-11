@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import date,datetime
 
 
+
 class Users(Base):
     __tablename__ = 'users'
 
@@ -13,6 +14,7 @@ class Users(Base):
     password = Column(String(255), nullable=False)
 
     students = relationship("Student", back_populates="user")
+    contacts = relationship("Contact",back_populates="user")
       # otp = Column(String(4), nullable=True)  
       # # Stores 4 digit OTP
       # otp_expiry = Column(DateTime, nullable=True)  
@@ -49,7 +51,6 @@ class City(Base):
     city_name = Column(String(100), nullable=False, unique=True)
     state_id = Column(Integer, ForeignKey("states.state_id"))
 
-    # 'state' here matches the 'cities' attribute in State class
     state = relationship("State", back_populates="cities")
 
 
@@ -70,10 +71,18 @@ class Student(Base):
     language = Column(String(100))
 
     user = relationship("Users", back_populates='students')
-
     state = relationship("State")
     city = relationship("City")
 
+
+class Contact(Base):
+    __tablename__ = "contact"
+    contact_id = Column(Integer,primary_key=True,autoincrement=True) 
+    user_id = Column(Integer,ForeignKey("users.user_id"))
+    message = Column(Text)
+    created_at = Column(Date, default=date.today)
+
+    user = relationship("Users", back_populates='contacts')
 
 
 

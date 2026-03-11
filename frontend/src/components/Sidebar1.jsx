@@ -1,11 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
+import { useParams } from "react-router-dom";
 import Api from "../services/Api";
 import { Home, User, BarChart2, BookOpen, Camera } from "lucide-react";
 import { Link } from "react-router";
 
 function Sidebar1() {
+  const { stud_id } = useParams();
   const [user, setUser] = useState(null);
+  useEffect(() => {
+    console.log("Student ID:", stud_id);
 
+    fetchStudent();
+  }, []);
+
+  const fetchStudent = async () => {
+    try {
+      const res = await Api.get(`/get_student/${stud_id}`);
+      console.log(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
     useEffect(() => {
       Api.get("/me")
         .then(res => setUser(res.data))
@@ -41,7 +56,7 @@ function Sidebar1() {
       <nav className="space-y-6 flex-1">
         
         <Link
-          to="/exampleprofile"
+          to={`/exampleprofile/${stud_id}`}
           className="flex items-center gap-3 hover:bg-indigo-600 px-4 py-2 rounded-lg transition"
         >
           <Home size={20} />
@@ -49,7 +64,7 @@ function Sidebar1() {
         </Link>
 
         <Link
-          to="/profilesection"
+          to={`/profilesection/${stud_id}`}
           className="flex items-center gap-3 hover:bg-indigo-600 px-4 py-2 rounded-lg transition"
         >
           <User size={20} />
@@ -57,7 +72,7 @@ function Sidebar1() {
         </Link>
 
         <Link
-          to="/analyticspage"
+          to={`/analyticspage/${stud_id}`}
           className="flex items-center gap-3 hover:bg-indigo-600 px-4 py-2 rounded-lg transition"
         >
           <BarChart2 size={20} />
@@ -65,7 +80,7 @@ function Sidebar1() {
         </Link>
 
         <Link
-          to="/coursepage"
+          to={`/coursepage/${stud_id}`}
           className="flex items-center gap-3 hover:bg-indigo-600 px-4 py-2 rounded-lg transition"
         >
           <BookOpen size={20} />

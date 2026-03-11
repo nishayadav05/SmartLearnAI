@@ -40,31 +40,11 @@ class StateResponse(StateBase):
 
 
 
-from pydantic import BaseModel
-
 #  For Create/Update
 class StudentCreate(BaseModel):
-    age: int
-    education: str
-    state_id: str
-    city_id: str
-    skills: str
-    language: str
-
-
-#  For Response
-class StudentResponse(StudentCreate):
-    stud_id: int
-    user_id: int
-
-    class Config:
-        from_attributes = True    
-
-
-# class UpdateProfile(BaseModel):
-#     age: Optional[int] = None
-#     education: Optional[str] = None
-#     state_id: Optional[int] = None
-#     city_id: Optional[int] = None
-#     skills: Optional[str] = None
-#     language: Optional[str] = None
+    age: Optional[int]= None
+    education: Optional[str]= None
+    state_id: Optional[int]= None
+    city_id: Optional[int]= None
+    skills: Optional[str]= None
+    language: Optional[str]= None
