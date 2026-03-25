@@ -36,10 +36,10 @@ function BlogDetail() {
            {/* <!-- Blog Image --> */}
           <span>
             <div class="image-holder"  className="w-[400px] h-[600px] overflow-hidden rounded-xlw" >
-              <img src={"http://192.168.254.96:8000/BlogImages/"+blog.blogimage}
+              <img src={"http://localhost:8000/BlogImages/"+blog.blogimage}
                   alt="Blog Image"
                   class="img-set"
-                  className="w-[400px] h-[600px] overflow-hidden rounded-xl"/>
+                  className="w-[600px] h-[600px] overflow-hidden rounded-xl"/>
             </div>
           </span>
             {/* <!-- Blog Meta --> */}

@@ -2,12 +2,14 @@ import { Link, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import Api from "../services/Api.jsx";
 import axios from "axios";
+import { FaStar } from "react-icons/fa";
 
 function CourseDisplay() {
   const { id } = useParams();
   const [coursedata, setCourseData] = useState([]);
   const [course, setCourse] = useState(null);
   const videoRef = useRef(null);
+   const [userRating, setUserRating] = useState(0);
 
   // Fetch all courses
   useEffect(() => {
@@ -39,6 +41,24 @@ function CourseDisplay() {
   if (!course) {
     return <div className="text-center mt-20 text-xl">Loading course...</div>;
   }
+
+
+ 
+
+  const handleRating = async (value) => {
+    try {
+      setUserRating(value); // UI update instantly
+
+      await Api.post("/rate_course", {
+        course_id: course.course_id, // from params
+        rating: value
+      });
+
+      alert("Rating submitted");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // Generate Signed/Public Video URL from Supabase
   // const videoUrl = supabase.storage
@@ -97,6 +117,34 @@ function CourseDisplay() {
 
         {/* Course Details */}
         <div className="bg-white rounded-xl shadow p-6 md:p-8 space-y-6">
+          <div className="flex items-center gap-2 mt-4">
+           {[1,2,3,4,5].map((star) => (
+          <div key={star} className="relative cursor-pointer">
+            
+            {/* LEFT HALF */}
+            <div
+              className="absolute w-1/2 h-full z-10"
+              onClick={() => handleRating(star - 0.5)}
+            ></div>
+
+            {/* FULL STAR */}
+            <FaStar
+              className={`text-2xl ${
+                userRating >= star
+                  ? "text-yellow-500"
+                  : userRating >= star - 0.5
+                  ? "text-yellow-400"
+                  : "text-gray-300"
+              }`}
+              onClick={() => handleRating(star)}
+            />
+          </div>
+        ))}
+
+            <span className="text-sm text-gray-600 ml-2">
+              {userRating ? `${userRating} / 5` : "Rate this course"}
+            </span>
+          </div>
 
           <div className="flex justify-between items-center border-b pb-5 flex-wrap gap-4">
             <div>

@@ -21,7 +21,7 @@ function Profilesection1() {
     languages: [],
   });
 
-  // ================= LOAD PROFILE =================
+  // LOAD PROFILE 
   useEffect(() => {
     if (!stud_id) return;
 
@@ -57,14 +57,14 @@ function Profilesection1() {
     fetchProfile();
   }, [stud_id]);
 
-  // ================= LOAD STATES =================
+  // LOAD STATES
   useEffect(() => {
     Api.get("/states")
       .then((res) => setStates(res.data))
       .catch((err) => console.log(err));
   }, []);
 
-  // ================= LOAD CITIES =================
+  // LOAD CITIES
   const fetchCities = async (stateId) => {
     try {
       const res = await Api.get(`/cities/${stateId}`);
@@ -74,7 +74,7 @@ function Profilesection1() {
     }
   };
 
-  // ================= INPUT HANDLER =================
+  // INPUT HANDLER 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -159,7 +159,7 @@ function Profilesection1() {
 }
 };
 
-  // ================= OPTIONS =================
+  // OPTIONS
   const educationOptions = [
     "BCA",
     "BSc - Computer Science",
@@ -284,7 +284,6 @@ function Profilesection1() {
                 >
                   Cancel
                 </button>
-
                 <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" >Save</button>
               </div>
             )}

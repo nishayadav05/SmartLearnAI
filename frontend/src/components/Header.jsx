@@ -212,7 +212,11 @@ function Header(){
                         <li className="px-4 py-2 hover:bg-gray-200">
                               <Link to="/exampleprofile/">Profile</Link>
                         </li>
-
+                        <li className="px-4 py-2 hover:bg-gray-200">
+                              <a href="http://localhost:5174/dashboard" rel="noopener noreferrer">
+                               Instructor
+                              </a>
+                        </li>
                         <li
                               className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                               onClick={() => {

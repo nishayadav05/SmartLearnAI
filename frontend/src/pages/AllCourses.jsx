@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Api from "../services/Api";
-import { Code, Brain, Monitor, Briefcase, User, Palette, Megaphone } from "lucide-react";
+import { Code, Brain, Monitor, Briefcase, User, Palette, Megaphone, Bluetooth } from "lucide-react";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+
 
 const menuItems = ["All","Beginner", "Intermediate", "Advanced"];
 const categories = [
@@ -48,7 +50,17 @@ function AllCourses() {
     })
   : [];
 
-
+    const handleRating = async (value, course_id) => {
+        try {
+          await Api.post("/rate_course", {
+            course_id,
+            rating: value
+          });
+          alert("Rating submitted");
+        } catch (err) {
+          console.log(err);
+        }
+      };
   useEffect(() => {
     fetchdata();
   }, []);
@@ -94,29 +106,65 @@ return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {coursedata.length > 0 ? (
             filteredCourses.map((data) => (
-              <Link
+              
+                <div className="hover:scale-105 transition-transform duration-300">
+                <Link
                 to={`/coursedisplay/${data.course_id}`}
                 // key={index}
                 key={data.course_id}
                 className="block bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition duration-300 cursor-pointer"
               >
-                <div className="hover:scale-105 transition-transform duration-300">
                 <div className="relative w-full overflow-hidden rounded-t-xl">
                   <img
                     src={"http://localhost:8000/Thumbnail/"+data.thumbnail}
                     alt={data.course_title}
-                    className="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-full h-50 object-cover transition-transform duration-300 hover:scale-105"
                   />
                 </div>
-
+              </Link>
                 <div className="p-4">
                   <h3 className="font-semibold text-gray-800 text-sm leading-tight">
                     {data.course_title}
                   </h3>
 
+                 <div className="flex items-center gap-1 mt-1">
+  {[1,2,3,4,5].map((star) => {
+    const rating = data.rating || 0;
+
+    if (rating >= star) {
+      return <FaStar key={star} className="text-yellow-500" />;
+    } else if (rating >= star - 0.5) {
+      return <FaStarHalfAlt key={star} className="text-yellow-500" />;
+    } else {
+      return <FaRegStar key={star} className="text-yellow-500" />;
+    }
+  })}
+
+  {/* Rating + Reviews */}
+  <span className="text-sm text-gray-700 ml-1">
+    {(data.rating || 0).toFixed(1)}
+  </span>
+
+  <span className="text-xs text-gray-500 ml-1">
+    ({data.total_reviews || 0})
+  </span>
+</div>
+
+                  {/* Allow user to rate
+                  <div className="flex gap-1 mt-1">
+                    {[1,2,3,4,5].map((s) => (
+                      <span
+                        key={s}
+                        onClick={() => handleRating(s, course.course_id)}
+                        className="cursor-pointer"
+                      >
+                        ⭐
+                      </span>
+                    ))}
+                  </div> */}
                   <div className="flex items-center gap-1 mt-1">
                     <span className="font-bold text-yellow-600 text-sm">
-                      ⭐ {data.category || "4.7"}
+                       {data.category || "4.7"}
                     </span>
                   </div>
 
@@ -130,9 +178,13 @@ return (
                    <div className="flex gap-2 mt-2 text-xs">
                     <p>{data.categories}</p>
                   </div>
+                  <div>
+                    <button class="bg-purple-600 text-white text-sm font-semibold px-3 py-1 rounded-md flex items-center gap-1">
+                      Premium
+                    </button>
+                  </div>
                   </div>
                 </div>
-              </Link>
             ))
           ) : (
             <p className="text-gray-600">No courses found.</p>

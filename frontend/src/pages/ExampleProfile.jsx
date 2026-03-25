@@ -1,139 +1,3 @@
-// import React from "react";
-// import { motion } from "framer-motion";
-
-// const userData = {
-//   name: "Richa Bhatt",
-//   email: "richa@example.com",
-//   role: "AI Learning Student",
-//   education: "MCA",
-//   skillLevel: "Intermediate",
-//   interests: ["Machine Learning", "NLP", "Web Development", "Data Science"],
-//   completedCourses: 8,
-//   ongoingCourses: 3,
-//   recommendationAccuracy: "92%",
-//   learningProgress: 75,
-//   recommendedCourses: [
-//     {
-//       title: "Advanced Machine Learning",
-//       level: "Advanced",
-//     },
-//     {
-//       title: "Deep Learning with Python",
-//       level: "Intermediate",
-//     },
-//     {
-//       title: "Natural Language Processing",
-//       level: "Advanced",
-//     },
-//   ],
-// };
-
-// function ExampleProfile() {
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 p-6">
-//       <motion.div
-//         initial={{ opacity: 0, y: 40 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.6 }}
-//         className="max-w-6xl mx-auto"
-//       >
-//         {/* Profile Header */}
-//         <div className="bg-white shadow-2xl rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8">
-//           <div className="w-32 h-32 rounded-full bg-indigo-500 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-//             {userData.name.charAt(0)}
-//           </div>
-
-//           <div className="flex-1">
-//             <h1 className="text-3xl font-bold text-gray-800">
-//               {userData.name}
-//             </h1>
-//             <p className="text-gray-500">{userData.email}</p>
-//             <p className="mt-2 text-indigo-600 font-medium">
-//               {userData.role}
-//             </p>
-
-//             <div className="mt-4 flex flex-wrap gap-2">
-//               {userData.interests.map((interest, index) => (
-//                 <span
-//                   key={index}
-//                   className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
-//                 >
-//                   {interest}
-//                 </span>
-//               ))}
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Stats Section */}
-//         <div className="grid md:grid-cols-3 gap-6 mt-8">
-//           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-//             <h2 className="text-2xl font-bold text-indigo-600">
-//               {userData.completedCourses}
-//             </h2>
-//             <p className="text-gray-600">Completed Courses</p>
-//           </div>
-
-//           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-//             <h2 className="text-2xl font-bold text-indigo-600">
-//               {userData.ongoingCourses}
-//             </h2>
-//             <p className="text-gray-600">Ongoing Courses</p>
-//           </div>
-
-//           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-//             <h2 className="text-2xl font-bold text-indigo-600">
-//               {userData.recommendationAccuracy}
-//             </h2>
-//             <p className="text-gray-600">Recommendation Accuracy</p>
-//           </div>
-//         </div>
-
-//         {/* Learning Progress */}
-//         <div className="bg-white rounded-3xl shadow-xl p-8 mt-8">
-//           <h2 className="text-xl font-bold text-gray-800 mb-4">
-//             Overall Learning Progress
-//           </h2>
-
-//           <div className="w-full bg-gray-200 rounded-full h-6">
-//             <div
-//               className="bg-indigo-600 h-6 rounded-full text-white text-sm flex items-center justify-center"
-//               style={{ width: `${userData.learningProgress}%` }}
-//             >
-//               {userData.learningProgress}%
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Recommended Courses */}
-//         <div className="bg-white rounded-3xl shadow-xl p-8 mt-8">
-//           <h2 className="text-xl font-bold text-gray-800 mb-6">
-//             AI Recommended Courses For You
-//           </h2>
-
-//           <div className="grid md:grid-cols-3 gap-6">
-//             {userData.recommendedCourses.map((course, index) => (
-//               <div
-//                 key={index}
-//                 className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition duration-300"
-//               >
-//                 <h3 className="text-lg font-semibold">{course.title}</h3>
-//                 <p className="mt-2 text-sm opacity-90">
-//                   Level: {course.level}
-//                 </p>
-//                 <button className="mt-4 bg-white text-indigo-600 px-4 py-2 rounded-full font-medium hover:bg-gray-100">
-//                   Start Learning
-//                 </button>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </motion.div>
-//     </div>
-//   );
-// }
-
-
 import Sidebar1 from "../components/sidebar1";
 import Recommendationchart1 from "../components/recommandationchart1";
 import { motion } from "framer-motion";
@@ -224,7 +88,7 @@ function ExampleProfile() {
           </p>
         </div>
 
-       {/* ================= Stats Cards ================= */}
+       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-14">
         {stats.map((stat, index) => (
           <div
@@ -247,7 +111,7 @@ function ExampleProfile() {
       </div>
 
 
-        {/* ================= Charts Row ================= */}
+        {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-14">
           
           {/* AI Chart */}
@@ -311,7 +175,7 @@ function ExampleProfile() {
           </div>
         </div>
 
-        {/* ================= Recommended Courses ================= */}
+        {/* Recommended Courses */}
         <div className="bg-white rounded-3xl shadow-xl p-10">
           <h2 className="text-xl font-bold text-gray-800 mb-8 text-center">
             AI Recommended Courses For You

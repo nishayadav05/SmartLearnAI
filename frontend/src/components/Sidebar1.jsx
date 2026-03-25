@@ -29,7 +29,7 @@ function Sidebar1() {
   return (
     <div className="w-64 bg-slate-600 text-white p-6 sticky top-0 h-screen flex flex-col">
 
-      {/* ===== Profile Section ===== */}
+      {/* Profile Section */}
       <div className="flex flex-col items-center mb-10">
         
         <div className="relative group">
