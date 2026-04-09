@@ -1,12 +1,24 @@
-from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float
+from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float,DateTime
 from database import Base
 from sqlalchemy.orm import relationship
 from datetime import date, datetime
 
 
+class Admin(Base):
+    __tablename__ = 'admin'
+    admin_id = Column(Integer,primary_key=True,index=True,autoincrement=True)
+    admin_email = Column(String(50),unique=True,nullable=False)
+    admin_password = Column(String(255),nullable=False)
+    admin_name = Column(String)
+
+    otps = relationship("OTP",back_populates="admin")
+
 class Users(Base):
     __tablename__ = 'user'
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True) 
     fullname = Column(String(50), nullable=False)
+    email = Column(String(50),unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
 
     students = relationship("Student", back_populates="user")
     contacts = relationship("Contact",back_populates="user")
@@ -129,3 +141,13 @@ class Instructor(Base):
     user = relationship("Users", back_populates='instructor')
     state = relationship("State")
     city = relationship("City")
+
+class OTP(Base):
+    __tablename__ = "otp_table"
+
+    otp_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    admin_email = Column(String,ForeignKey('admin.admin_email'),index=True)
+    otp = Column(String)
+    expiry = Column(DateTime)
+
+    admin =  relationship("Admin", back_populates="otps")

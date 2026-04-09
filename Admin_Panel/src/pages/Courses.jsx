@@ -2,12 +2,15 @@ import Sidebar from "../components/Sidebar";
 import { useState, useEffect } from "react";
 import Api from "../Api";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import SearchBar from "../components/SearchBar";
+import { prioritySearch } from "../utils/searchUtils";
 
 function Courses() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
-
   const [studdata, setstuddata] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  // const [studdata, setstuddata] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -38,11 +41,22 @@ function Courses() {
     fetchdata();
   }, []);
 
+  const filteredCourses = prioritySearch(studdata, searchQuery, [
+  "course_id",
+  "course_title",
+  "category",
+  "skill_level",
+  "prerequisites",
+  "description",
+  "tag",
+  "course_price"
+]);
+
   // Pagination
-  const totalPages = Math.ceil(studdata.length / rowsPerPage);
-  const lastIndex = currentPage * rowsPerPage;
-  const firstIndex = lastIndex - rowsPerPage;
-  const currentCourses = studdata.slice(firstIndex, lastIndex);
+ const totalPages = Math.ceil(filteredCourses.length / rowsPerPage);
+const lastIndex = currentPage * rowsPerPage;
+const firstIndex = lastIndex - rowsPerPage;
+const currentCourses = filteredCourses.slice(firstIndex, lastIndex);
 
   return (
     <div className="flex bg-gray-900 min-h-screen w-full text-gray-200">
@@ -50,6 +64,16 @@ function Courses() {
 
       <div className="ml-64 p-6 w-full min-h-screen bg-gray-900">
         <h1 className="text-3xl font-bold mb-6 text-white">Courses</h1>
+
+           {/* SEARCH BOX */}
+        <SearchBar
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1); // important
+          }}
+          placeholder="Search by State Name or ID..."
+        />
 
         <div className="bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-700">
 

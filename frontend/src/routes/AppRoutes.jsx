@@ -15,6 +15,8 @@ import CoursesPage1 from "../pages/CoursePage1";
 import Analyticssession1 from "../pages/Analyticssection1";
 import CourseDisplay from "../pages/CourseDisplay";
 import AllCourses from "../pages/AllCourses";
+import { Helicopter } from "lucide-react";
+import HelpCenter from "../pages/HelpCenter";
 
 
 function AppRoutes(){
@@ -39,6 +41,7 @@ function AppRoutes(){
                         <Route path="/profilesection/:stud_id" element={<Profilesection1/>}></Route>
                         <Route path="/coursepage" element={<CoursesPage1/>}></Route>
                         <Route path="/analyticspage" element={<Analyticssession1/>}></Route>
+                        <Route path="/helpcenter" element={<HelpCenter></HelpCenter>}></Route>
                   </Routes>    
       )
 }

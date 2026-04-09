@@ -13,7 +13,6 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-<<<<<<< HEAD
   const handleLogin = async (e) => {
   e.preventDefault();
 
@@ -24,40 +23,9 @@ function Login() {
 
   try {
     const res = await Api.post("/login", formData);
-=======
-
-  // const handleLogin = async (e) => {
-  //     e.preventDefault();
-
-  //     try {
-  //       const hashed = await hashPassword(password);
-  //       console.log("HASHED PASSWORD:", hashed);
-  //       const formData = new FormData();
-  //       formData.append("email", email);
-  //        formData.append("password", hashed);
-
-  //       const res = await Api.post("/login", formData);
-  //       localStorage.setItem("token", res.data.token);
-  //       console.log("Login Response:", res.data);
-
-  //       if (!res.data.token) {
-  //         alert("Invalid Credentials!");
-  //         return;
-  //       }
-
-  //       // Store token & user
-  //       localStorage.setItem("token", res.data.token);
-  //       localStorage.setItem("user_id", res.data.user_id);
-
-  //       //  Get student data
-  //       const studentRes = await Api.get(
-  //         `/get_student_by_user/${res.data.user_id}`
-  //       );
->>>>>>> 80d6e8a (updated-20)
 
   //       const stud_id = studentRes.data.stud_id;
 
-<<<<<<< HEAD
       const user_id = res.data.user_id;
 
       if (role === "Student") {
@@ -89,8 +57,7 @@ function Login() {
           window.location.href = "http://localhost:5174/ProfileSetup";
         }
       }
-
-    } else {
+     else {
       alert("Invalid Credentials!");
     }
 
@@ -98,54 +65,8 @@ function Login() {
     console.error(err);
     alert("Login Failed");
   }
+
 };
-=======
-  //       // Navigate once
-  //       navigate(`/exampleprofile/${stud_id}`);
-
-  //     } catch (err) {
-  //       console.error(err);
-  //       alert("Login Failed");
-  //     }
-  //   };
-
-
-  const handleLogin = async (e) => {
-      e.preventDefault();
-
-      try {
-        const hashed = await hashPassword(password);
-
-        const formData = new FormData();
-        formData.append("email", email);
-        formData.append("password", hashed);
-
-        const res = await Api.post("/login", formData);
-
-        //  store token
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user_id", res.data.user_id);
-
-
-        console.log("LOGIN RESPONSE:", res.data);
-
-        //  fetch student
-        const studentRes = await Api.get(
-          `/get_student_by_user/${res.data.user_id}`
-        );
-
-        const stud_id = studentRes.data.stud_id;
-
-        navigate(`/exampleprofile/${stud_id}`);
-
-      } catch (err) {
-        console.error(err);
-        alert("Login Failed");
-      }
-    };
-
-
->>>>>>> 80d6e8a (updated-20)
 
 // const handleLogin = async (e) => {
 //   e.preventDefault();
@@ -303,6 +224,6 @@ function Login() {
       </AnimatePresence>
     </div>
   );
-}
 
+}
 export default Login;

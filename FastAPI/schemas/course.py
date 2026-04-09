@@ -10,12 +10,7 @@ class CourseRequest(BaseModel):
     thumbnail: str   # URL or local filename
     video: str       # URL or local filename
     course_price: str
-<<<<<<< HEAD
 
 class CourseRatingRequest(BaseModel):
     course_id: int
     rating: int
-=======
-    created_at: datetime
-    
->>>>>>> 80d6e8a (updated-20)

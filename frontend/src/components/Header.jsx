@@ -151,6 +151,7 @@ function Header(){
             <Link to="/blog" className="text-sm/6 font-semibold text-gray-900">Blog</Link>
             <Link to="/allcourses" className="text-sm/6 font-semibold text-gray-900">All Courses</Link>
             <Link to="/contact" className="text-sm/6 font-semibold text-gray-900">Contact</Link>
+             <Link to="/helpcenter" className="text-sm/6 font-semibold text-gray-900">Help Center</Link>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
                   {/* <Link to="/Course" element={<Course/>} className="flex items-center gap-2">Course</Link> */}
             </a>

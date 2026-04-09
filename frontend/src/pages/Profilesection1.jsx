@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import Sidebar1 from "../components/sidebar1";
+import Sidebar1 from "../components/Sidebar1";
 import Api from "../services/Api";
 import { useParams } from "react-router-dom";
 
@@ -8,14 +8,9 @@ function Profilesection1() {
 
     const { stud_id } = useParams();
 
-<<<<<<< HEAD
   // LOAD PROFILE 
   useEffect(() => {
     if (!stud_id) return;
-=======
-      const [authUser, setAuthUser] = useState(null);
-      const [userId, setUserId] = useState(null);
->>>>>>> 80d6e8a (updated-20)
 
       const [isEditing, setIsEditing] = useState(false);
       const [states, setStates] = useState([]);
@@ -108,7 +103,6 @@ function Profilesection1() {
         }
       };
 
-<<<<<<< HEAD
     fetchProfile();
   }, [stud_id]);
 
@@ -131,10 +125,6 @@ function Profilesection1() {
 
   // INPUT HANDLER 
   const handleChange = (e) => {
-=======
-      // ================= INPUT =================
-      const handleChange = (e) => {
->>>>>>> 80d6e8a (updated-20)
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -313,12 +303,7 @@ function Profilesection1() {
                 >
                   Cancel
                 </button>
-<<<<<<< HEAD
                 <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" >Save</button>
-=======
-
-                <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full">Save</button>
->>>>>>> 80d6e8a (updated-20)
               </div>
             )}
           </div>

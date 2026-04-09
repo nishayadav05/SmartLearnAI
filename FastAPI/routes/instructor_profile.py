@@ -11,7 +11,7 @@ from models import Instructor
 
 router = APIRouter(tags=["Instructor Profile"])
 
-STUDENT_DIR=r"\\192.168.254.96\SharedVideos\StudentPhotos"
+STUDENT_DIR=r"\\192.168.41.96\SharedVideos\StudentPhotos"
 os.makedirs(STUDENT_DIR,exist_ok=True)
 # @router.post("/insert_update_instructor_profile/{user_id}")
 # def insert_update_profile(user_id: int, data: InstructorCreate, db: Session = Depends(get_db)):
@@ -350,3 +350,67 @@ async def insert_profile(
     except Exception as e:
         print("ERROR:", e)
         return {"error": str(e)}
+    
+
+@router.put("/update_instructor_profile/{user_id}")
+async def update_profile(
+    user_id: int,
+    gender: str = Form(None),
+    mobile: str = Form(None),
+    qualification: str = Form(None),
+    bio: str = Form(None),
+    experience: int = Form(None),
+    state_id: int = Form(None),
+    city_id: int = Form(None),
+    language: str = Form(None),
+    skills: str = Form(None),
+    photo: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    import os
+
+    instructor = db.query(Instructor).filter(
+        Instructor.user_id == user_id
+    ).first()
+
+    if not instructor:
+        raise HTTPException(status_code=404, detail="Instructor not found")
+
+    # UPDATE FIELDS
+    if gender: instructor.gender = gender
+    if mobile: instructor.mobile = mobile
+    if qualification: instructor.qualification = qualification
+    if bio: instructor.bio = bio
+    if experience: instructor.experience = experience
+    if state_id: instructor.state_id = state_id
+    if city_id: instructor.city_id = city_id
+    if language: instructor.language = language
+    if skills: instructor.skills = skills
+
+    # IMAGE UPDATE
+    if photo:
+        file_name = photo.filename
+        file_location = os.path.join(STUDENT_DIR, file_name)
+
+        with open(file_location, "wb") as f:
+            f.write(await photo.read())
+
+        instructor.photo = file_name
+
+    db.commit()
+
+    return {"message": "Instructor updated successfully"}  
+
+@router.delete("/delete_instructor/{user_id}")
+def delete_instructor(user_id: int, db: Session = Depends(get_db)):
+    instructor = db.query(Instructor).filter(
+        Instructor.user_id == user_id
+    ).first()
+
+    if not instructor:
+        raise HTTPException(status_code=404, detail="Instructor not found")
+
+    db.delete(instructor)
+    db.commit()
+
+    return {"message": "Instructor deleted successfully"}

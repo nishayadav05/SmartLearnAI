@@ -1,4 +1,3 @@
-<<<<<<< HEAD
     import { useParams } from "react-router-dom";
     import { useState, useEffect } from "react";
     import Api from "../services/Api";
@@ -19,24 +18,6 @@
             })
             .catch((err) => console.log(err));
         }, []);
-=======
-import { useState, useEffect } from "react";
-import Api from "../services/Api";
-import { useNavigate } from "react-router-dom";
-
-function Contact(){
-    const [user, setUser] = useState(null);
-    const [message,setMessage] = useState("");
-
-
-     useEffect(() => {
-      Api.get("/me")
-        .then((res) => {
-          setUser(res.data);
-        })
-        .catch((err) => console.log(err));
-    }, []);
->>>>>>> 80d6e8a (updated-20)
 
 
     const navigate = useNavigate();
@@ -46,21 +27,12 @@ function Contact(){
 
             const user_id = localStorage.getItem("user_id");
 
-<<<<<<< HEAD
             // Check if user logged in
             if (!user_id) {
                 alert("Please login first");
                 navigate("/login");   // redirect to login page
                 return;
             }
-=======
-        // Check if user logged in
-        if (!user_id) {
-            alert("Please login first");
-            navigate("/login");   // redirect to login page
-            return;
-        }
->>>>>>> 80d6e8a (updated-20)
 
             try {
                 await Api.post("/insert_contact_msg", {

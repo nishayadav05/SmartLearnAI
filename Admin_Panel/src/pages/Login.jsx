@@ -24,6 +24,10 @@ function Login() {
     });
 
     if (res.data.success) {
+
+      localStorage.setItem("adminName", res.data.admin_name);
+      localStorage.setItem("adminEmail", res.data.admin_email);
+
       navigate("/dashboard"); 
     } else {
       setError("Invalid email or password");
@@ -33,6 +37,35 @@ function Login() {
     setError("Login failed");
   }
 };
+
+// const handleLogin = async (e) => {
+//   e.preventDefault();
+//   setError("");
+
+//   console.log(email, password); //must show values
+
+//   try {
+//     const res = await Api.post("/admin_login", {
+//       admin_email: email,
+//       admin_password: password
+//     });
+
+//     console.log(res.data);
+
+//     if (res.data.success) {
+//       localStorage.setItem("adminName", res.data.admin_name);
+//       localStorage.setItem("adminEmail", res.data.admin_email);
+
+//       navigate("/dashboard");
+//     } else {
+//       setError("Invalid email or password");
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     setError("Login failed");
+//   }
+// };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-200">
@@ -114,7 +147,7 @@ function Login() {
         {/* Footer */}
         <p className="text-sm text-right mt-5 text-gray-400">
           <Link
-            to="/registration"
+            to="/forgotpassword"
             className="text-blue-500 ml-1 hover:underline"
           >
            Forgot Password

@@ -110,11 +110,7 @@
                 <div className="relative w-full h-[500px] overflow-hidden">
                  <img
                   src={"http://localhost:8000/BlogImages/"+blog.blogimage}
-<<<<<<< HEAD
                   alt={blog.blogtitle}
-=======
-                  alt={blog.blogtitle} 
->>>>>>> 80d6e8a (updated-20)
                   className="absolute inset-0 w-[400px] h-[500px] object-cover transition duration-500 group-hover:scale-110"
                   />
 

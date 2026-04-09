@@ -26,10 +26,10 @@ router = APIRouter(tags=["Course"])
 # UPLOAD_DIR1=r"Z:\\Coursevideo"
 # os.makedirs(UPLOAD_DIR1,exist_ok=True)
 
-THUMBNAIL_DIR = r"images/Thumbnail"
+THUMBNAIL_DIR = r"\\192.168.41.96\SharedVideos\Thumbnail"
 os.makedirs(THUMBNAIL_DIR, exist_ok=True)
 
-UPLOAD_DIR1 = r"images/Coursevideo"
+UPLOAD_DIR1 = r"\\192.168.41.96\SharedVideos\Coursevideo"
 os.makedirs(UPLOAD_DIR1, exist_ok=True)
 
 @router.post("/course_upload")
@@ -208,7 +208,6 @@ def delete_course(course_id: int, db: Session = Depends(get_db)):
     return {"status": "success", "message": "Course + files deleted successfully"}
 
 
-<<<<<<< HEAD
 @router.post("/rate_course")
 def rate_course(data: CourseRatingRequest, db: Session = Depends(get_db)):
 
@@ -259,14 +258,3 @@ def rate_course(data: CourseRatingRequest, db: Session = Depends(get_db)):
 #     ).first()
 
 #     return {"rating": rating.rating if rating else 0}
-=======
-
-@router.delete("/courses/{course_id}")
-def delete_course(course_id:int,db:Session=Depends(get_db)):
-    course = db.query(models.Course).filter(models.Course.course_id==course_id).first()
-    if not course:
-        raise HTTPException(status_code=404,detail="Course not found")
-    db.delete(course)
-    db.commit()
-    return {"message":f"State with ID {course_id} deleted successfully"}
->>>>>>> 80d6e8a (updated-20)

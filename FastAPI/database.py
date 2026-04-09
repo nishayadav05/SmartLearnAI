@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-URL_DATABASE ='postgresql+psycopg2://postgres:richa2909@192.168.254.96:5432/SmartLearnAI'
+URL_DATABASE ='postgresql+psycopg2://postgres:richa2909@192.168.41.96:5432/SmartLearnAI'
 
 def get_db():
     db=SessionLocal()

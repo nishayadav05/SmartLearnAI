@@ -6,6 +6,7 @@ from routes import blog
 from auth.auth import hash_password, verify_password, create_access_token, decode_access_token
 from database import get_db
 from auth.dependencies import verify_token
+from schemas.user import UserModel
 
 router=APIRouter(tags=["Users"])
         
@@ -138,3 +139,19 @@ def get_me(
 def total_users(db: Session = Depends(get_db)):
     count = db.query(models.Users).count()
     return {"total_users": count}
+
+
+@router.put("/update_users/{user_id}")
+def update_user(user_id: int, user: UserModel, db: Session = Depends(get_db)):
+    db_user = db.query(user).filter(user.user_id == user_id).first()
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db_user.fullname = user.fullname
+    db_user.email = user.email
+    db_user.status = user.status   # ✅ only this
+
+    db.commit()
+
+    return {"message": "User updated"}

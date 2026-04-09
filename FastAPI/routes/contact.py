@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends,HTTPException
+from fastapi import APIRouter, Depends,HTTPException,Form
 from sqlalchemy.orm import Session
 import models
 from database import get_db
@@ -42,3 +42,17 @@ def delete_contact(contact_id: int, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": f"Contact with ID {contact_id} deleted successfully"}
+
+@router.put("/update_contact/{contact_id}")
+def update_contact(
+    contact_id: int,
+    message: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    contact = db.query(models.Contact).filter(models.Contact.contact_id == contact_id).first()
+
+    contact.message = message
+
+    db.commit()
+
+    return {"message": "Contact updated"}

@@ -8,7 +8,7 @@ import models
 
 router=APIRouter(tags=["Blog"])
 
-UPLOAD_DIR = r"\\192.168.254.96\SharedVideos\BlogImages"
+UPLOAD_DIR = r"\\192.168.41.96\SharedVideos\BlogImages"
 
 
 @router.post("/blog")
@@ -79,3 +79,38 @@ def delete_blog(blog_id:int,db:Session=Depends(get_db)):
     db.delete(blog)
     db.commit()
     return {"message":f"State with ID {blog_id} deleted successfully"}
+
+
+@router.put("/blogs/{blog_id}")
+def update_blog(
+    blog_id: int,
+    blogername: str = Form(...),
+    blogerrole: str = Form(...),
+    blogtitle: str = Form(...),
+    blogdescription: str = Form(...),
+    blogimage: UploadFile = File(None),  # optional
+    db: Session = Depends(get_db)
+):
+    blog = db.query(models.Blog).filter(models.Blog.blog_id == blog_id).first()
+
+    if not blog:
+        raise HTTPException(status_code=404, detail="Blog not found")
+
+    # update fields
+    blog.blogername = blogername
+    blog.blogerrole = blogerrole
+    blog.blogtitle = blogtitle
+    blog.blogdescription = blogdescription
+
+    # update image if provided
+    if blogimage:
+        file_path = f"{UPLOAD_DIR}/{blogimage.filename}"
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(blogimage.file, buffer)
+
+        blog.blogimage = blogimage.filename
+
+    db.commit()
+    db.refresh(blog)
+
+    return {"message": "Blog updated successfully"}
