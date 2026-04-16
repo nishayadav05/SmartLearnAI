@@ -33,7 +33,7 @@ function App(){
     <div>
       
       <AppRoutes/>
-      <SideBar/>
+      {/* <SideBar/> */}
     </div>
   )
 }

@@ -9,11 +9,6 @@ function Course() {
   const [active, setActive] = useState(0);
   const [coursedata, setCourseData] = useState([]);
 
-  // const fetchdata = async () => {
-  //   const response = await Api.get("/course_display");
-  //   setCourseData(response.data);
-  // };
-
   const fetchdata = async () => {
   const response = await Api.get("/course_display");
   console.log("Fetched courses:", response.data);
@@ -22,9 +17,6 @@ function Course() {
   setCourseData(response.data);
   console.log(response.data);
 };
-
-
-  
   
   useEffect(() => {
     fetchdata();
@@ -72,9 +64,9 @@ function Course() {
                 <div className="hover:scale-105 transition-transform duration-300">
                 <div className="relative w-full overflow-hidden rounded-t-xl">
                   <img
-                    src={`https://rwompwlcjbigfbnovqxu.supabase.co/storage/v1/object/public/course_thumbnail/${data.thumbnail}`}
+                    src={`http://localhost:8000/Thumbnail/${data.thumbnail}`}
                     alt={data.course_title}
-                    className="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-full h-50 object-cover transition-transform duration-300 hover:scale-105"
                   />
                 </div>
 
@@ -85,7 +77,7 @@ function Course() {
 
                   <div className="flex items-center gap-1 mt-1">
                     <span className="font-bold text-yellow-600 text-sm">
-                      ⭐ {data.category || "4.7"}
+                       {data.category || "4.7"}
                     </span>
                   </div>
 

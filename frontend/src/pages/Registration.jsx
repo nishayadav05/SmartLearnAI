@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate,Link } from "react-router-dom";
 import Api from "../services/Api";
+// import { hashPassword } from "../utils/hash";
 
 const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,15 +24,15 @@ function Registration() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [matchError, setMatchError] = useState("");
-
-
  
   const handleSubmit =async(e)=>{
       e.preventDefault();
+      // const hashed = await hashPassword(password);
+      // console.log("HASHED PASSWORD:", hashed);
       const formdata = new FormData();
       formdata.append("fullname",fullname);
       formdata.append("email",email);
-      formdata.append("password",password);
+      formdata.append("password", password);
       
       if (emailError || passwordError || matchError) {
         alert("Fix validation errors first");
@@ -50,7 +51,7 @@ function Registration() {
         );
         localStorage.setItem("fullName", fullname);
         localStorage.setItem("email", email);
-        localStorage.setItem("password", password);
+        // localStorage.setItem("password", password);
         alert("Registered Successfully....")
         navigate("/login");
       }
@@ -59,6 +60,7 @@ function Registration() {
         alert("Registration Failed")
       }
     };
+
    // Email validation
   useEffect(() => {
     if (email === "") {

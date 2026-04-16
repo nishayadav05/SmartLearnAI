@@ -1,15 +1,18 @@
-
 import { useEffect, useState } from "react";
 import Sidebar1 from "../components/sidebar1";
 import Api from "../services/Api";
 import { useParams } from "react-router-dom";
 
 function Profilesection1() {
+
   const { stud_id } = useParams();
+
   const [isEditing, setIsEditing] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [user, setUser] = useState(null);
+
+  const [userId, setUserId] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -21,19 +24,40 @@ function Profilesection1() {
     languages: [],
   });
 
+  // ================= GET LOGGED USER =================
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    Api.get("/me", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        setUserId(res.data.user_id);
+        setAuthUser(res.data);
+
+        setFormData((prev) => ({
+          ...prev,
+          fullname: res.data.fullname || ""
+        }));
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   // ================= LOAD PROFILE =================
   useEffect(() => {
-    if (!stud_id) return;
+    if (!userId) return;
 
     const fetchProfile = async () => {
       try {
-        const res = await Api.get(`/single_profile/${stud_id}`);
+        const res = await Api.get("/get_student_by_user",{
+           withCredentials: true
+        });
         const data = res.data;
 
-        setUser(data.user);
-
-        setFormData({
-          fullname: data.user?.fullname || "",
+        setFormData((prev) => ({
+          ...prev,
           age: data.age || "",
           education: data.education || "",
           state_id: data.state_id || "",
@@ -44,18 +68,19 @@ function Profilesection1() {
           languages: data.language
             ? data.language.split(",").map((l) => l.trim())
             : [],
-        });
+        }));
 
         if (data.state_id) {
-            fetchCities(data.state_id);
+          fetchCities(data.state_id);
         }
+
       } catch (err) {
-        console.log(err);
+        console.log("Profile Error:", err);
       }
     };
 
     fetchProfile();
-  }, [stud_id]);
+  }, [userId]);
 
   // ================= LOAD STATES =================
   useEffect(() => {
@@ -81,7 +106,7 @@ function Profilesection1() {
       ...prev,
       [name]: value,
     }));
-  };  
+  };
 
   const handleStateChange = (e) => {
     const stateId = e.target.value;
@@ -92,62 +117,45 @@ function Profilesection1() {
       city_id: "",
     }));
 
-    if (stateId) {
-      fetchCities(stateId);   
-    } else {
-      setCities([]);
-    }
+    if (stateId) fetchCities(stateId);
+    else setCities([]);
   };
 
   const handleMultiSelect = (e, field) => {
-    const selectedOptions = Array.from(
+    const selectedValues = Array.from(
       e.target.selectedOptions,
       (option) => option.value
     );
 
     setFormData((prev) => ({
       ...prev,
-      [field]: selectedOptions,
+      [field]: selectedValues,
     }));
   };
 
-    useEffect(() => {
-  Api.get("/me")
-    .then((res) => {
-      setUser(res.data);
-    })
-    .catch((err) => console.log(err));
-}, []);
+  // ================= UPDATE =================
+  const handleUpdate = async () => {
+    const payload = {
+      age: formData.age ? Number(formData.age) : null,
+      education: formData.education || null,
+      state_id: formData.state_id ? Number(formData.state_id) : null,
+      city_id: formData.city_id ? Number(formData.city_id) : null,
+      skills: formData.skills,
+      language: formData.languages,
+    };
 
-  
- const handleUpdate = async () => {
+    try {
+      await Api.post(`/insert_update_profile/${userId}`, payload);
+      alert("Updated Successfully!");
+      setIsEditing(false);
+    } catch (err) {
+      console.log(err);
+      alert("Update Failed");
+    }
+  };
 
-  if (!user_id) {
-    alert("User ID missing!");
-    return;
-  }
 
-  try {
-
-    await Api.post(`/insert_update_profile/${user_id}`, {
-      age: Number(formData.age),
-      education: formData.education,
-      state_id: Number(formData.state_id),
-      city_id: Number(formData.city_id),
-      skills: formData.skills.join(","), 
-      language: formData.languages.join(",")
-    });
-
-    alert("Updated Successfully!");
-    setIsEditing(false);
-
-  } catch (err) {
-    console.log(err.response?.data);
-    alert("Update Failed");
-  }
-};
-
-  // ================= OPTIONS =================
+  // OPTIONS
   const educationOptions = [
     "BCA",
     "BSc - Computer Science",
@@ -272,8 +280,7 @@ function Profilesection1() {
                 >
                   Cancel
                 </button>
-
-                <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" > Save </button>
+                <button onClick={handleUpdate} className="bg-indigo-500 text-white px-5 py-2 rounded-full" >Save</button>
               </div>
             )}
           </div>
@@ -287,7 +294,7 @@ function Profilesection1() {
                <input
                 type="text"
                 name="fullname"
-                value={user?.fullname||""}
+                value={formData.fullname}
                 disabled={!isEditing}
                 onChange={handleChange}
                 className={`w-full p-3 rounded-xl border ${
@@ -301,7 +308,7 @@ function Profilesection1() {
                <label className="block text-gray-600 mb-2">Email</label>
                <input
                  type="email"
-                 value={user?.email || ""}
+                 value={authUser?.email || ""}
                  disabled
                  className="w-full p-3 rounded-xl bg-gray-100 border"
                />
@@ -386,14 +393,15 @@ function Profilesection1() {
           {/* Skills */}
           <div className="mt-6">
             <label className="block text-gray-600 mb-2">Skills</label>
-            <select
+
+           <select
               multiple
               value={formData.skills}
               disabled={!isEditing}
               onChange={(e) => handleMultiSelect(e, "skills")}
               className={`w-full p-3 rounded-xl border ${
-                  isEditing ? "border-indigo-400" : "bg-gray-100"
-                }`}
+                isEditing ? "border-indigo-400" : "bg-gray-100"
+              }`}
             >
               {skillOptions.map((skill, i) => (
                 <option key={i} value={skill}>
@@ -422,6 +430,7 @@ function Profilesection1() {
               ))}
             </select>
           </div>
+          
 
         </div>
       </div>
@@ -431,4 +440,3 @@ function Profilesection1() {
 
 export default Profilesection1;
 
- 

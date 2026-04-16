@@ -2,11 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Api from "../services/Api";
+// import { hashPassword } from "../utils/hash";
 import { jwtDecode } from "jwt-decode";
+import { Eye, EyeOff } from "lucide-react";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Student");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
 
@@ -18,37 +22,45 @@ const handleLogin = async (e) => {
   formData.append("password", password);
 
   try {
-    const res = await Api.post("/login", formData);
+    // LOGIN
+    await Api.post("/login", formData);
 
-    console.log("Login Response:", res.data);
+    // GET USER FROM COOKIE
+    const meRes = await Api.get("/me");
+    const user_id = meRes.data.user_id;
 
-    if (res.data.success) {
+    console.log("USER:", meRes.data);
 
-      localStorage.setItem("token", res.data.token);
+    // ================= STUDENT =================
+    if (role === "Student") {
+      const studentRes = await Api.get("/get_student_by_user");
 
-      //  FIXED HERE (no nested user assumption)
-      const user_id = res.data.user_id;  
-
-      if (!user_id) {
-        alert("User ID not found in response!");
-        return;
+      if (studentRes.data.exists) {
+        navigate("/home");
+      } else {
+        navigate("/exampleprofile");
       }
-
-      const studentRes = await Api.get(`/get_student_by_user/${user_id}`);
-
-      const stud_id = studentRes.data.stud_id;
-
-      navigate(`/exampleprofile/${stud_id}`);
-
-    } else {
-      alert("Invalid Credentials!");
     }
+
+    // ================= INSTRUCTOR =================
+    else if (role === "Instructor") {
+      const instructorRes = await Api.get(`/get_instructor_by_user/${user_id}`);
+
+      if (instructorRes.data.exists) {
+        window.location.href = "http://localhost:5174/dashboard";
+      } else {
+        window.location.href = `http://localhost:5174/ProfileSetup?user_id=${user_id}`;
+      }
+    }
+    navigate("/home");
+    window.location.reload();
 
   } catch (err) {
     console.error(err);
-    alert("Login Failed");
+    alert(err.response?.data?.detail || "Login Failed");
   }
 };
+
 
   return (
     <div>
@@ -78,6 +90,18 @@ const handleLogin = async (e) => {
 
             <form onSubmit={handleLogin}>
               <div className="mb-4">
+                <label className="block text-sm mb-1">Login As</label>
+                  <select
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                  <option value="--Select Role--" disabled></option>
+                  <option value="Student">Student</option>
+                  <option value="Instructor">Instructor</option>
+                  </select>
+              </div>
+              <div className="mb-4">
                 <label className="block text-sm mb-1">Email</label>
                 <input
                   type="text"
@@ -87,16 +111,24 @@ const handleLogin = async (e) => {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm mb-1">Password</label>
-                <input
-                  type="password"
-                  className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <div className="mb-4 relative">
+                  <label className="block text-sm mb-1">Password</label>
 
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  <span
+                    className="absolute right-3 top-9 text-sm text-blue-600 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </span>
+                </div>
+              
               <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
                 Login
               </button>

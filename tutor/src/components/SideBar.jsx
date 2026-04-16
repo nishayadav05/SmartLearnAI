@@ -17,7 +17,7 @@ function SideBar() {
     { icon: <FaPlusCircle />, label: "Create Course", path: "/courseupload" },
     { icon: <FaUsers />, label: "Students", path: "/" },
     { icon: <MdMessage />, label: "Messages", path: "/qnapage"},
-    { icon: <IoSettingsSharp />, label: "Settings", path: "/settingpage" },
+    { icon: <IoSettingsSharp />, label: "Profile", path: "/instructorprofile" },
   ];
 
   return (

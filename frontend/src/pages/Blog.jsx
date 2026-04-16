@@ -1,5 +1,6 @@
     import {Link} from "react-router";
     import { useEffect, useState } from "react";
+    // import BlogDetail from "./BlogDetail";
     import Api from "../services/Api";
 
     const menuItems = [
@@ -21,7 +22,7 @@
         fetchdata();
       },[]);
        
-      const roleMap = [null, "Instructors", "Learner", "Employees"];
+      const roleMap = [null, "Instructor", "Learner", "Employees"];
 
       const filteredBlogs = Array.isArray(blogData)
         ? roleMap[active] === null
@@ -30,7 +31,10 @@
         (blog) => blog.blogerrole === roleMap[active]
         )
     : [];
-      return (
+
+    // const SUPABASE_BASE = "https://rwompwlcjbigfbnovqxu.supabase.co/storage/v1/object/public/blogimages/";
+  
+  return (
         <div className="min-h-screen bg-gray-50">
           {/* Hero */}
             <div className="relative w-full h-[90vh] mt-10">
@@ -93,24 +97,26 @@
                   ))}
             </div>
           <div className="max-w-8xl mx-auto px-8">
-         
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mt-30">
         
             {filteredBlogs.map((blog) => (
-             <Link to={`/blogdetail/${blog.blog_id}`}>
-               <div
+              <Link to={`/blogdetail/${blog.blog_id}`}>
+            <div
               key={blog.blog_id}
                 className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden relative group"
               >
                 {/* Image */}
+                
                 <div className="relative w-full h-[500px] overflow-hidden">
-                  <img
-                    src={`http://localhost:8000/blogimages/${blog.blogimage}`}
-                    alt={blog.blogtitle}
-                    className="absolute inset-0 w-[400px] h-[500px] object-cover transition duration-500 group-hover:scale-110"
+                 <img
+                  src={"http://localhost:8000/BlogImages/"+blog.blogimage}
+                  alt={blog.blogtitle}
+                  className="absolute inset-0 w-[400px] h-[500px] object-cover transition duration-500 group-hover:scale-110"
                   />
+
                   
                   {/* Dark overlay */}
+                  
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition duration-500"></div>
                   {/* // // Center text */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500">
@@ -119,36 +125,33 @@
                       </span>
                   </div>   
                 </div> 
+                
                 <div className="p-6">
-                          <span className="text-sm text-datkblue-600 font-semibold">
-                            {blog.blogerrole}
-                          </span>
-
-                          <h2 className="text-xl font-bold mt-1">
-                            {blog.blogtitle}
-                          </h2>
-                          
-                          <p className="text-gray-600 mt-2" >
-                            {blog.blogdescription.slice(0,30)}....
-                          </p>
-                          <p className="text-bold">{new Date(blog.blogdate).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric"
-                          })}</p>
-                        {/* <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                            <span>By {blog.author}</span>
-                            <span>{blog.date}</span> 
-                        </div> */}
+                  <span className="text-sm text-datkblue-600 font-semibold">
+                    {blog.blogerrole}
+                  </span>
+                  <h2 className="text-xl font-bold mt-1">
+                    {blog.blogtitle}
+                  </h2>
+                    <p className="text-gray-600 mt-2" >
+                      {blog.blogdescription.slice(0,30)}....
+                    </p>
+                    <br></br>
+                    <h5 class=" font-bold text-gray-900 ">{blog.blogername}</h5>
+                      <p className="text-bold">{new Date(blog.blogdate).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                  })}</p>
               </div>
               </div>
               </Link>
           ))}
-          
           </div>
-          
           </div>
         </div>
+        
       );
+      
     }
     export default Blog;

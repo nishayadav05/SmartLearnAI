@@ -2,26 +2,19 @@ from  fastapi import FastAPI, APIRouter,Depends,Form,File,UploadFile,HTTPExcepti
 from typing import Annotated,Literal
 from pydantic import Field
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import get_db
 import shutil
 import models
 
-
-UPLOAD_DIR="blogimages"
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 router=APIRouter(tags=["Blog"])
+
+UPLOAD_DIR = r"\\192.168.254.96\SharedVideos\BlogImages"
+
 
 @router.post("/blog")
 def blog(
     blogername: str = Form(...),
-    blogerrole: Literal["Instructors","Learner","Employees"]=Form(...),
+    blogerrole: Literal["Instructor","Learner","Employees"]=Form(...),
     blogtitle :  str =Form(...),
     blogdescription : str =Form(...),
     blogimage: UploadFile =File(...),
@@ -36,17 +29,33 @@ def blog(
         blogerrole=blogerrole,
         blogtitle=blogtitle,
         blogdescription=blogdescription,
-        blogimage=blogimage.filename
+       blogimage=blogimage.filename 
     )
 
     db.add(db_blog)
     db.commit()
     db.refresh(db_blog)
 
-    return{
-        "message":"Employee added Successfully",
-        "data":db_blog
-    }
+    return {"message": "Blog inserted"}
+
+
+
+# @router.post("/blog")
+# def blog(data: BlogCreate, db: Session = Depends(get_db)):
+
+#     db_blog = models.Blog(
+#         blogername=data.blogername,
+#         blogerrole=data.blogerrole,
+#         blogtitle=data.blogtitle,
+#         blogdescription=data.blogdescription,
+#         blogimage=data.blogimage
+#     )
+
+#     db.add(db_blog)
+#     db.commit()
+#     db.refresh(db_blog)
+
+#     return {"message": "Blog inserted successfully"}
 
 
 @router.get("/blog_display")
@@ -60,3 +69,13 @@ async def single_data(blog_id:int,db:Session=Depends(get_db)):
     if not result:
         raise HTTPException(status_code=404,detail="Employee not found")
     return result
+
+
+@router.delete("/blogs/{blog_id}")
+def delete_blog(blog_id:int,db:Session=Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.blog_id==blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404,detail="Blog not found")
+    db.delete(blog)
+    db.commit()
+    return {"message":f"State with ID {blog_id} deleted successfully"}

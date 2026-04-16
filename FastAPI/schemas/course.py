@@ -1,13 +1,23 @@
-from pydantic import BaseModel,EmailStr,Field
-from typing import Annotated,Literal
+from pydantic import BaseModel
+from datetime import datetime
+class CourseRequest(BaseModel):
+    course_title: str
+    category: str
+    skill_level: str
+    prerequisites: str
+    description: str
+    tag: str
+    thumbnail: str   # URL or local filename
+    video: str       # URL or local filename
+    course_price: str
+
+class CourseRatingRequest(BaseModel):
+    course_id: int
+    rating: int
 
 
-class CourseModel(BaseModel):
-    
-    course_title : Annotated[str,Field(...,max_length=50)]
-    category:Annotated[Literal["Artificial Intelligence & Data Science","Development","IT & Software","Business","Personal Development","Design","Marketing"],Field(title="Course Category")]
-    skill_level:Annotated[Literal["Beginner","Intermediate","Advanced"],Field(title="Skill level")]
-    prerequisites:Annotated[str,Field()]
-    description:Annotated[str,Field()]
-    tag:Annotated[str,Field()]
- 
+
+class CourseViewPercentage(BaseModel):
+    course_id: int
+    total_views: int
+    percentage: float
