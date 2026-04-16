@@ -7,9 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import Annotated
 from schemas.user import UserModel
-from routes import blog,users
+# from routes import blog,users
 from fastapi.staticfiles import StaticFiles
-from routes import stud_profile,course,contact,instructor_profile,admin
+from routes import stud_profile,course,contact,instructor_profile,admin,blog,users
 import os
 
 origins = [
@@ -34,6 +34,7 @@ app.include_router(stud_profile.router)
 app.include_router(course.router)
 app.include_router(contact.router)
 app.include_router(instructor_profile.router)
+# app.include_router(admin.router)
 
 #Blog Image Folder
 UPLOAD_DIR=r"\\192.168.41.96\SharedVideos\BlogImages"

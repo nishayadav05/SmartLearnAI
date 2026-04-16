@@ -1,15 +1,53 @@
-import { useState } from "react";
-// import Course from "./Course";
+import { useEffect, useState } from "react";
 import {Contact, Search} from "lucide-react"
 import Api from "../services/Api";
 import { Link ,useNavigate} from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 function Header(){
       const [open, setOpen] = useState(false);
       const [openc, setOpenc] = useState(false);
+      const [userId, setUserId] = useState(null);
+      const [user, setUser] = useState(null);
+      const [loading, setLoading] = useState(true);
       const navigate = useNavigate();
       
+     useEffect(() => {
+                  const fetchUser = async () => {
+                  try {
+                        const res = await Api.get("/me", {
+                        withCredentials: true // IMPORTANT
+                        });
 
-      const isLoggedIn = !!localStorage.getItem("token");
+                        setUser(res.data); // user exists
+                  } catch (err) {
+                        setUser(null); // not logged in
+                  } finally {
+                        setLoading(false);
+                  }
+                  };
+
+                  fetchUser();
+                  }, []);
+
+
+
+    const handleLogout = async () => {
+            try {
+            //  Call backend to clear cookie
+            await Api.post("/logout", {}, { withCredentials: true });
+
+            } catch (err) {
+            console.log(err);
+            }
+
+            //  Clear frontend
+            localStorage.removeItem("token"); // optional
+            setUser(null);
+
+            navigate("/"); //  goes to landing
+            };
+
       return (
       <div>
             <header className="bg-white">
@@ -19,115 +57,6 @@ function Header(){
                   <span className="text-2xl text-blue-700" >SmartLearn.AI</span>
                   </a>
             </div>
-                        <li
-                  className="relative list-none"
-                  onMouseEnter={() => setOpenc(true)}
-                  // onMouseLeave={() => setOpenc(false)}
-                  >
-                  {/* Explore Button */}
-                        <button onClick={() => setOpenc(prev => !prev)}
-                              className="flex items-center justify-between w-full py-2 px-3 rounded font-medium text-heading md:w-auto hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0"> Explore
-                              <svg className="w-4 h-4 ms-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
-                              </svg>
-                              </button>
-                  {/* Mega Dropdown */}
-                        {openc && (
-      <div
-            className="absolute left-0 mt-5 w-[1100px] bg-white shadow-xl rounded-xl p-6 border border-gray-200 animate-dropdown z-30"
-            onMouseEnter={() => setOpenc(true)}   // KEEP OPEN when mouse enters grid
-            onMouseLeave={() => setOpenc(false)}  // CLOSE ONLY when mouse leaves entire panel
-            >
-            <div className="grid grid-cols-6 gap-8">
-        {/* Column 1 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Artificial Intelligence & Data Science</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Machine Learning</li>
-                        <li>Deep Learning</li>
-                        <li>Data Analysis</li>
-                        <li>Computer Vision</li>
-                        <li>NLP</li>
-                        <li>Generative AI</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                  </ul>
-                  </div>
-
-                  {/* Column 2 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">IT & Software</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Cybersecurity</li>
-                        <li>Operating Systems</li>
-                        <li>Linux</li>
-                        <li>Ethical Hacking</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                  </ul>
-                  </div>
-
-                  {/* Column 3 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Business</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Entrepreneurship</li>
-                        <li>Management</li>
-                        <li>Finance</li>
-                        <li>Marketing</li>
-                        <li>Business Strategy</li>
-                        <li>Sales</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                  </ul>
-                  </div>
-
-                  {/* Column 4 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Personal Development</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Productivity</li>
-                        <li>Leadership</li>
-                        <li>Mental Wellness</li>
-                        <li>Time Management</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                  </ul>
-                  </div>
-
-                  {/* Column 5 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Design</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Graphic Design</li>
-                        <li>UI/UX Design</li>
-                        <li>Animation</li>
-                        <li>3D Design</li>
-                        <li>Illustration</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                        </ul>
-                   </div>
-
-                  {/* Column 6 */}
-                  <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Marketing</h3>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                        <li>Digital Marketing</li>
-                        <li>SEO</li>
-                        <li>Social Media</li>
-                        <li>Email Marketing</li>
-                        <li>Branding</li>
-                        <li>Entrepreneurship</li>
-                        <li>Management</li>
-                        <li>Finance</li>
-                        <li>Business Strategy</li>
-                        <li>Marketing</li>
-                        <li>Sales</li>
-                        <li className="text-blue-600 font-medium cursor-pointer">View all</li>
-                  </ul>
-                  </div>
-
-                        </div>
-                  </div>
-            )}
-      </li>
-
 
             <div className="flex items-left rounded-full shadow border px-30 py-2 hidden md:flex">
                   <Search className="text-gray-500" />
@@ -153,13 +82,10 @@ function Header(){
             <Link to="/contact" className="text-sm/6 font-semibold text-gray-900">Contact</Link>
              <Link to="/helpcenter" className="text-sm/6 font-semibold text-gray-900">Help Center</Link>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
-                  {/* <Link to="/Course" element={<Course/>} className="flex items-center gap-2">Course</Link> */}
             </a>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
-                  {/* <Link to="/Contact" element={<Contact/>} className="flex items-center gap-2">Contact</Link> */}
             </a>
 
-                  {/* <a href="#" class="text-sm/6 font-semibold text-gray-900">Company</a> */}
             </el-popover-group>
              <div className="relative">
                   {/* Profile Button */}
@@ -171,96 +97,119 @@ function Header(){
                   </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
-                  {/* {open && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
-                  <ul>
-                        <li className="px-4 py-2 hover:bg-gray-200 flex items-center gap-2">
-                              <Link to="/exampleprofile/"  className="flex items-center gap-2">                
-                              <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg> Profile</Link>
-                        </li>
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                        <Link to="/registration" className="flex items-center gap-2">
-                              <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg> Registration
-                        </Link>
-                        </li>
-                        <hr />
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                        <Link to="/login" className="flex items-center gap-2">
-                                    <svg className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                                    <path d="M20 12h-13l3 -3m0 6l-3 -3" />
-                                    </svg>
-                                    Login
+
+
+            {open && (
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border z-50 overflow-hidden animate-fadeIn">
+                  
+                  {/* USER INFO */}
+                  {user && (
+                        <div className="px-4 py-3 border-b bg-gray-50">
+                        <p className="text-sm font-semibold text-gray-800">
+                        {user?.fullname}
+                        </p>
+                        <p className="text-xs text-gray-500">Welcome back 👋</p>
+                        </div>
+                  )}
+
+                  <ul className="py-2 text-sm text-gray-700">
+
+                        {/*  IF USER LOGGED IN */}
+                        {!loading && user ? (
+                        <>
+                        <li>
+                              <Link
+                              to={`/exampleprofile`}
+                              className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition"
+                              >
+                              Profile
                               </Link>
                         </li>
-                  </ul>
-                  </div>
-                  )} */}
 
+                        <li>
+                              <button
+                              onClick={async () => {
+                                    try {
+                                    // Step 1: get logged user id
+                                    const userRes = await Api.get("/me", {
+                                    withCredentials: true,
+                                    });
 
-                  {open && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg z-50">
-                  <ul>
+                                    const userId = userRes.data.user_id;
 
-                        {isLoggedIn ? (
-                        <>
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                              <Link to="/exampleprofile/">Profile</Link>
-                        </li>
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                              <a href="http://localhost:5174/dashboard" rel="noopener noreferrer">
-                               Instructor
-                              </a>
+                                    // Step 2: check instructor profile
+                                    const res = await Api.get(
+                                    `/get_instructor_by_user/${userId}`,
+                                    { withCredentials: true }
+                                    );
+
+                                    if (res.data.exists) {
+                                    // ✅ Profile exists → open dashboard (other project)
+                                    window.location.href = "http://localhost:5174/dashboard";
+                                    } else {
+                                    //  Profile not created → open setup page
+                                    window.location.href = "http://localhost:5174/profilesetup";
+                                    }
+
+                                    } catch (err) {
+                                    console.log(err);
+                                    alert("Error checking instructor profile");
+                                    }
+                              }}
+                              className="flex w-full text-left items-center gap-2 px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition"
+                              >
+                              Instructor
+                        </button>
                         </li>
                         <li
-                              className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                              onClick={() => {
-                              localStorage.removeItem("token");
-                              // window.location.reload();
-                              navigate("/");
-
-                              }}
+                              onClick={handleLogout}
+                              className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 hover:text-red-600 cursor-pointer transition"
                         >
                               Logout
-                        </li>
-                        <hr></hr>
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                              <Link to="/login/">Login</Link>
                         </li>
                         </>
                         ) : (
                         <>
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                              <Link to="/login">Login</Link>
+                        {/*  NOT LOGGED IN */}
+                        <li>
+                              <Link
+                              to="/login"
+                              className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition"
+                              >
+                              Login
+                              </Link>
                         </li>
 
-                        <li className="px-4 py-2 hover:bg-gray-200">
-                              <Link to="/registration">Registration</Link>
+                        <li>
+                              <Link
+                              to="/registration"
+                              className="flex items-center gap-2 px-4 py-2 hover:bg-green-50 hover:text-green-600 transition"
+                              >
+                              Registration
+                              </Link>
                         </li>
                         </>
                         )}
-
                   </ul>
                   </div>
                   )}
+
+
             </div>
             </nav>
+
+             <li className="px-4 py-2 text-gray-500">
+                  Hello, {user?.fullname}
+                  </li>
           
-          
-                        <el-dialog>
+         
+       <el-dialog>
       <dialog id="mobile-menu" className="backdrop:bg-transparent lg:hidden">
                   <div tabIndex="0" className="fixed inset-0 focus:outline-none">
                   <el-dialog-panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                   <div className="flex items-center justify-between">
                         <a href="#" className="-m-1.5 p-1.5">
                         <span className="text-blue-600 text-2xl" >SmartLearn.AI</span>
-                        {/* <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="" class="h-8 w-auto" /> */}
                         </a>
                         <button type="button" command="close" commandfor="mobile-menu" className="-m-2.5 rounded-md p-2.5 text-gray-700">
                         <span className="sr-only">Close menu</span>
@@ -283,7 +232,6 @@ function Header(){
                   <li
                         className="relative list-none"
                         onMouseEnter={() => setOpenc(true)}
-                  // onMouseLeave={() => setOpenc(false)}
                   >
                   {/* Explore Button */}
                         <button onClick={() => setOpenc(prev => !prev)}
@@ -297,8 +245,8 @@ function Header(){
   
                    <div
                         className="absolute left-0 mt-5 w-[900px] bg-white shadow-xl rounded-xl p-6 border border-gray-200 animate-dropdown z-30"
-                  onMouseEnter={() => setOpenc(true)}   // ⬅ KEEP OPEN when mouse enters grid
-                  onMouseLeave={() => setOpenc(false)}  // ⬅ CLOSE ONLY when mouse leaves entire panel
+                  onMouseEnter={() => setOpenc(true)}   
+                  onMouseLeave={() => setOpenc(false)}  
                   >
             <div className="grid grid-cols-4 gap-8">
                    {/* Column 1 */}
@@ -383,3 +331,6 @@ function Header(){
       </div>            
 )}
 export default Header;
+
+
+

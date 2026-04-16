@@ -1,16 +1,12 @@
-from fastapi import FastAPI,Depends,Form,File,UploadFile,HTTPException,APIRouter
+from fastapi import FastAPI,Depends,Form,File,UploadFile,HTTPException,APIRouter,Cookie
 import models
-from database import engine,SessionLocal, SessionLocal
-from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from schemas.course import CourseRequest,CourseRatingRequest
-from typing import Annotated,Literal
-from pydantic import Field
+from sqlalchemy import func
+from schemas.course import CourseRatingRequest,CourseViewPercentage
 import shutil
 from database import get_db
 import os
-import subprocess
-from fastapi.staticfiles import StaticFiles
+from auth.auth import decode_access_token
 
 app = FastAPI()
 router = APIRouter(tags=["Course"])
@@ -30,6 +26,10 @@ THUMBNAIL_DIR = r"\\192.168.41.96\SharedVideos\Thumbnail"
 os.makedirs(THUMBNAIL_DIR, exist_ok=True)
 
 UPLOAD_DIR1 = r"\\192.168.41.96\SharedVideos\Coursevideo"
+THUMBNAIL_DIR = r"SharedVideos/Thumbnail"
+os.makedirs(THUMBNAIL_DIR, exist_ok=True)
+
+UPLOAD_DIR1 = r"SharedVideos/Coursevideo"
 os.makedirs(UPLOAD_DIR1, exist_ok=True)
 
 @router.post("/course_upload")
@@ -79,78 +79,6 @@ def course_upload(
         "course_id": db_course.course_id
     }
 
-# @router.post("/course_upload")
-# def course_upload(
-#     course_title: str = Form(...),
-#     category: str = Form(...),
-#     skill_level: str = Form(...),
-#     prerequisites: str = Form(...),
-#     description: str = Form(...),
-#     tag: str = Form(...),
-#     course_price: str = Form(...),
-#     thumbnail: UploadFile = File(...),
-#     video: UploadFile = File(...),
-#     db: Session = Depends(get_db)
-# ):
-
-#     # 1️⃣ Generate unique names
-#     import uuid
-#     unique_thumbnail = f"{uuid.uuid4()}_{thumbnail.filename}"
-#     unique_video = f"{uuid.uuid4()}_{video.filename}"
-
-#     # 2️⃣ Save THUMBNAIL
-#     thumb_path = os.path.join(THUMBNAIL_DIR, unique_thumbnail)
-#     with open(thumb_path, "wb") as buffer:
-#         shutil.copyfileobj(thumbnail.file, buffer)
-
-#     # 3️⃣ Save RAW VIDEO before converting
-#     video_path = os.path.join(UPLOAD_DIR1, unique_video)
-#     with open(video_path, "wb") as buffer:
-#         shutil.copyfileobj(video.file, buffer)
-
-#     # 4️⃣ DASH manifest output path
-#     manifest_name = f"{uuid.uuid4()}_manifest.mpd"
-#     manifest_path = os.path.join(DASH_FOLDER, manifest_name)
-
-#     # 5️⃣ FFmpeg Convert to DASH
-#     command = [
-#         "ffmpeg",
-#         "-i", video_path,
-#         "-map", "0",
-#         "-codec:v", "libx264",
-#         "-codec:a", "aac",
-#         "-f", "dash",
-#         manifest_path
-#     ]
-
-#     subprocess.run(command)
-
-#     # 6️⃣ Save to Database
-#     db_course = models.Course(
-#         course_title=course_title,
-#         category=category,
-#         skill_level=skill_level,
-#         prerequisites=prerequisites,
-#         description=description,
-#         tag=tag,
-#         course_price=course_price,
-#         thumbnail=unique_thumbnail,   # ⬅ Store unique name
-#         video=unique_video,           # ⬅ Store unique raw video
-#         manifest=manifest_name        # ⬅ Store DASH manifest
-#     )
-
-#     db.add(db_course)
-#     db.commit()
-#     db.refresh(db_course)
-
-#     # 7️⃣ Correct JSON response
-#     return {
-#         "message": "Course uploaded & processed successfully",
-#         "thumbnail": unique_thumbnail,
-#         "video": unique_video,
-#         "manifest": manifest_name,
-#         "course_id": db_course.course_id
-#     }
 
 @router.get("/course_display")
 async def display(db:Session=Depends(get_db)):
@@ -229,28 +157,27 @@ def rate_course(data: CourseRatingRequest, db: Session = Depends(get_db)):
 
     return {"message": "Rating added", "rating": course.rating}
 
-# @router.post("/rate_course")
-# def rate_course(data: CourseRatingRequest, db: Session = Depends(get_db), user=Depends(get_current_user)):
 
-#     existing = db.query(models.Rating).filter(
-#         models.Rating.user_id == user.id,
-#         models.Rating.course_id == data.course_id
-#     ).first()
+@router.post("/track_course_view/{course_id}")
+def track_course_view(
+    course_id: int,
+    token: str = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not token:
+        raise HTTPException(401, "Not logged in")
 
-#     if existing:
-#         existing.rating = data.rating   # ✅ update rating
-#     else:
-#         new_rating = models.Rating(
-#             user_id=user.id,
-#             course_id=data.course_id,
-#             rating=data.rating
-#         )
-#         db.add(new_rating)
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
 
-#     db.commit()
+    print("INSERTING VIEW:")
+    print("User ID:", user_id)
+    print("Course ID:", course_id)   #  FIXED
 
-# @router.get("/get_user_rating/{course_id}")
-# def get_user_rating(course_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    new_view = models.CourseView(
+        user_id=user_id,
+        course_id=course_id
+    )
 
 #     rating = db.query(models.Rating).filter(
 #         models.Rating.user_id == user.id,
@@ -258,3 +185,94 @@ def rate_course(data: CourseRatingRequest, db: Session = Depends(get_db)):
 #     ).first()
 
 #     return {"rating": rating.rating if rating else 0}
+    db.add(new_view)
+    db.commit()
+
+    return {"message": "Tracked"}
+
+@router.get("/recent_courses")
+def get_recent_courses(
+    token: str = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not token:
+        raise HTTPException(401, "Token missing")
+
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+
+    data = db.query(
+        models.Course.course_id,
+        models.Course.course_title,
+        models.Course.thumbnail
+    ).join(
+        models.CourseView,
+        models.Course.course_id == models.CourseView.course_id
+    ).filter(
+        models.CourseView.user_id == user_id
+    ).order_by(
+        models.CourseView.viewed_at.desc()
+    ).limit(5).all()
+
+    print("TRACK API HIT")
+    print("User ID:", user_id)
+    print("Token:", token)
+
+    return [
+        {
+            "course_id": c.course_id,
+            "title": c.course_title,
+            "thumbnail": c.thumbnail
+        }
+        for c in data
+    ]
+
+from sqlalchemy import func
+
+@router.get("/course_view_percentage")
+def course_view_percentage(
+    token: str = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not token:
+        raise HTTPException(401, "Token missing")
+
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+
+    total_views = db.query(models.CourseView)\
+        .filter(models.CourseView.user_id == user_id)\
+        .count()
+
+    if total_views == 0:
+        return []
+
+    data = db.query(
+        models.Course.course_id,
+        models.Course.course_title,
+        models.Course.thumbnail,
+        models.Course.category,
+        func.count(models.CourseView.course_id).label("views")
+    ).join(
+        models.Course,
+        models.Course.course_id == models.CourseView.course_id
+    ).filter(
+        models.CourseView.user_id == user_id
+    ).group_by(
+        models.Course.course_id
+    ).all()
+
+    result = []
+
+    for item in data:
+        percentage = (item.views / total_views) * 100
+
+        result.append({
+            "course_id": item.course_id,
+            "title": item.course_title,
+            "thumbnail": item.thumbnail,
+            "category": item.category,
+            "percentage": round(percentage, 2)
+        })
+
+    return result

@@ -1,4 +1,5 @@
 from fastapi import Depends,APIRouter ,UploadFile,Form,HTTPException,File
+from fastapi import Depends,APIRouter ,UploadFile, Header,Cookie,File
 import models
 from database import engine,SessionLocal
 from sqlalchemy.orm import Session
@@ -6,6 +7,12 @@ from sqlalchemy.orm import joinedload
 from schemas.stud_profile import StudentCreate,CityBase
 from database import get_db
 import os,shutil
+from schemas.stud_profile import StudentCreate
+from auth.auth import decode_access_token
+from database import get_db
+import shutil
+import os
+import uuid
 
 router = APIRouter(tags=["Profile"])
 
@@ -89,22 +96,36 @@ def single_profile(stud_id: int, db: Session = Depends(get_db)):
         "photo":stud_data.photo
     }
 
-    
-@router.get("/get_student_by_user/{user_id}")
-def get_student_by_user(user_id: int, db: Session = Depends(get_db)):
-    
-    student = db.query(models.Student)\
-        .filter(models.Student.user_id == user_id)\
-        .first()
 
-    # If student does not exist → create new
+@router.get("/get_student_by_user")
+def get_student_by_user(
+    token: str = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if not token:
+        return {"exists": False}
+
+    payload = decode_access_token(token)
+    user_id = payload.get("user_id")
+
+    student = db.query(models.Student).filter(
+        models.Student.user_id == user_id
+    ).first()
+
     if not student:
-        student = models.Student(user_id=user_id)
-        db.add(student)
-        db.commit()
-        db.refresh(student)
-    return student
+        return {"exists": False}
 
+    return {
+        "exists": True,
+        "stud_id": student.stud_id,
+        "age": student.age,
+        "education": student.education,
+        "state_id": student.state_id,
+        "city_id": student.city_id,
+        "skills": student.skills,
+        "language": student.language,
+        "photo": student.photo
+    }
 
 @router.post("/insert_update_profile/{user_id}")
 def insert_update_profile(
@@ -161,19 +182,52 @@ def total_student(db: Session = Depends(get_db)):
     count = db.query(models.Student).count()
     return {"total_student": count}
 
+# @router.post("/profile_photo/{user_id}")
+# def profile_photo(
+#     user_id: int,
+#     photo:UploadFile=File(...),
+#     db: Session = Depends(get_db)
+# ):
+#     # Check existing student
+#     student = db.query(models.Student).filter(
+#         models.Student.user_id == user_id
+#     ).first()
+
+#     filename = photo.filename
+#     file_path = f"{STUDENT_DIR}/{photo.filename}"
+#     with open(file_path, "wb") as buffer:
+#         shutil.copyfileobj(photo.file, buffer)
+
+#     if student:
+#         # UPDATE
+#         student.photo = filename
+#         db.commit()
+#         db.refresh(student)
+#         return {"status": True, "message": "Student Photo Updated Successfully"}
+
+
+
 @router.post("/profile_photo/{user_id}")
 def profile_photo(
     user_id: int,
-    photo:UploadFile=File(...),
+    photo: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    #  Debug
+    print("USER ID:", user_id)
+
     # Check existing student
     student = db.query(models.Student).filter(
         models.Student.user_id == user_id
     ).first()
 
+    print("STUDENT:", student)
+
+    #  Unique filename
     filename = photo.filename
-    file_path = f"{STUDENT_DIR}/{photo.filename}"
+    file_path = os.path.join(STUDENT_DIR, filename)
+
+    # Save file
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(photo.file, buffer)
 
@@ -182,6 +236,9 @@ def profile_photo(
         student.photo = filename
         db.commit()
         db.refresh(student)
+
+        print("UPDATED PHOTO:", student.photo)
+
         return {"status": True, "message": "Student Photo Updated Successfully"}
 
     else:
@@ -193,4 +250,7 @@ def profile_photo(
         db.add(new_student)
         db.commit()
         db.refresh(new_student)
+
+        print("INSERTED PHOTO:", new_student.photo)
+
         return {"status": True, "message": "Student photo Inserted Successfully"}

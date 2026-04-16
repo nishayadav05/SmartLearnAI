@@ -8,8 +8,8 @@ import {
   FaUserGraduate,
   FaCity,
   FaMapMarkedAlt,
-  FaUserCircle, 
-  FaChevronUp,
+  // FaUserCircle, 
+  // FaChevronUp,
   FaChevronDown, 
   FaLock, 
   FaKey, 
@@ -18,6 +18,7 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+
 
 function Sidebar() {
 

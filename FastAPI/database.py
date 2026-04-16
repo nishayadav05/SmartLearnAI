@@ -12,7 +12,6 @@ def get_db():
         db.close()
         
 # load_dotenv()
-
 # DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(URL_DATABASE)

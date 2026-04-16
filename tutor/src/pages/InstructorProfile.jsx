@@ -1,796 +1,19 @@
-// import { useEffect, useState } from "react";
-// import SideBar from "../components/SideBar";
-// import Api from "../services/Api";
-// import { useParams } from "react-router-dom";
-
-// function InstructorProfile() {
-
-//   const { instructor_id } = useParams();
-
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [states, setStates] = useState([]);
-//   const [cities, setCities] = useState([]);
-//   const [user, setUser] = useState(null);
-
-  
-//   const [formData, setFormData] = useState({
-//     fullname:"",
-//     // photo: "",
-//     gender: "",
-//     mobile: "",
-//     qualification: "",
-//     experience: "",
-//     skills: [],
-//     bio:"",
-//     language: [],
-//     state_id: "",
-//     city_id: ""
-//   });
-
-//   // LOAD PROFILE
-//   useEffect(() => {
-//     if (!instructor_id) return;
-
-//     const fetchProfile = async () => {
-//       try {
-//         const res = await Api.get(`/single_instructor_profile/${instructor_id}`);
-//         const data = res.data;
-
-//         setFormData({
-//           fullname: data.user?.fullname || "",
-//           // photo: data.photo || "",
-//           gender: data.gender || "",
-//           mobile: data.mobile || "",
-//           qualification: data.qualification || "",
-//           experience: data.experience || "",
-//           skills: data.skills ? data.skills.split(",") : [],
-//           bio: data.bio|| "",
-//           language: data.language ? data.language.split(",") : [],
-//           state_id: data.state_id || "",
-//           city_id: data.city_id || ""
-//         });
-
-//         if (data.state_id) {
-//           fetchCities(data.state_id);
-//         }
-
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-
-//     fetchProfile();
-//   }, [instructor_id]);
-
-//   // // LOAD LOGGED USER (for name/email)
-//   // useEffect(() => {
-//   //   Api.get("/me")
-//   //     .then((res) => setUser(res.data))
-//   //     .catch((err) => console.log(err));
-//   // }, []);
-
-//   // LOAD STATES
-//   useEffect(() => {
-//     Api.get("/states")
-//       .then((res) => setStates(res.data))
-//       .catch((err) => console.log(err));
-//   }, []);
-
-//   // LOAD CITIES
-//   const fetchCities = async (state_id) => {
-//     try {
-//       const res = await Api.get(`/cities/${state_id}`);
-//       setCities(res.data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   // INPUT HANDLER
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleStateChange = (e) => {
-//     const stateId = e.target.value;
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       state_id: state_id,
-//       city_id: "",
-//     }));
-
-//     if (stateId) {
-//       fetchCities(state_id);
-//     } else {
-//       setCities([]);
-//     }
-//   };
-
-//   const handleMultiSelect = (e, field) => {
-//     const selected = Array.from(e.target.selectedOptions, (o) => o.value);
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       [field]: selected,
-//     }));
-//   };
-
-//   // SAVE / UPDATE
-//   const handleSave = async () => {
-//     if (!instructor_id) {
-//       alert("Instructor ID missing!");
-//       return;
-//     }
-
-//     try {
-//       await Api.post(`/insert_update_instructor_profile/${instructor_id}`, {
-//         // photo: formData.photo || null,
-//         gender: formData.gender || null,
-//         mobile: formData.mobile || null,
-//         qualification: formData.qualification || null,
-//         experience: formData.experience || null,
-//         bio: formData.bio || null,
-//         state_id: formData.state_id ? Number(formData.state_id) : null,
-//         city_id: formData.city_id ? Number(formData.city_id) : null,
-//         skills: formData.skills.length ? formData.skills.join(",") : null,
-//         language: formData.language.length ? formData.language.join(",") : null,
-//       });
-
-//       alert("Profile Updated Successfully!");
-//       setIsEditing(false);
-
-//     } catch (err) {
-//       console.log(err.response?.data);
-//       alert("Update Failed");
-//     }
-//   };
-// const educationOptions = [
-//     "BCA",
-//     "BSc - Computer Science",
-//     "BSc - IT",
-//     "B.Tech - Computer Science",
-//     "B.Tech - IT",
-//     "B.Tech - AI & ML",
-//     "B.E - Computer Engineering",
-//     "BCom",
-//     "BBA",
-//     "BA",
-//     "MCA",
-//     "MSc - Computer Science",
-//     "MSc - Data Science",
-//     "M.Tech - Computer Science",
-//     "MBA - IT",
-//     "MBA - Business Analytics",
-//     "Diploma - Computer Engineering",
-//     "Diploma - IT",
-//     "Self-Taught",
-//     "Working Professional - IT",
-//     "Working Professional - Non-IT",
-//     "Computer Science",
-//     "Information Technology",
-//     "Artificial Intelligence",
-//     "Data Science",
-//     "Cyber Security",
-//     "Business Administration",
-//     "Commerce",
-//     "Arts",
-//   ];
-
-
-//   const skillOptions = [
-//   "C/C++",
-//   "Java",
-//   "Python",
-//   "JavaScript",
-//   "Full Stack Development",
-//   "Frontend Development",
-//   "Backend Development",
-//   "React",
-//   "Angular",
-//   "Node.js",
-//   "Machine Learning",
-//   "Deep Learning",
-//   "Artificial Intelligence",
-//   "Data Science",
-//   "Data Analytics",
-//   "Generative AI",
-//   "Natural Language Processing (NLP)",
-//   "Computer Vision",
-//   "DevOps",
-//   "Cloud Computing",
-//   "AWS",
-//   "Azure",
-//   "Docker",
-//   "Kubernetes",
-//   "Cyber Security",
-//   "Ethical Hacking",
-//   "Blockchain",
-//   "Web3",
-//   "Digital Marketing",
-//   "Social Media Marketing",
-//   "SEO (Search Engine Optimization)",
-//   "Google Ads",
-//   "Meta Ads",
-//   "Content Marketing",
-//   "Email Marketing",
-//   "Affiliate Marketing",
-//   "Influencer Marketing",
-//   "Performance Marketing",
-//   "Business Development",
-//   "Product Management",
-//   "Project Management",
-//   "Entrepreneurship",
-//   "Startup Strategy",
-//   "Business Analytics",
-//    "UI/UX",
-//   "Graphic Design",
-//   "Video Editing",
-//   "Motion Graphics",
-//   "Content Creation",
-//   "Personal Branding",
-//   "No-Code / Low-Code Development",
-//   "Automation",
-//   "Prompt Engineering",
-//   "AR/VR",
-//   "IoT",
-//   ];
-
-//   const languageOptions = [
-//     "English",
-//     "Hindi",
-//     "Gujarati",
-//     "Spanish",
-//     "French",
-//     "German",
-//     "Other"
-//   ];
-
-// //   return (
-// //     <div className="flex min-h-screen bg-gray-100">
-// //       <div className="w-64">
-// //         <SideBar />
-// //       </div>
-
-// //       <div className="flex-1 p-10 flex justify-center items-center">
-// //         <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-4xl">
-
-// //           {/* Header */}
-// //           <div className="flex justify-between mb-8">
-// //             <h2 className="text-2xl font-bold">Instructor Profile</h2>
-
-// //             {!isEditing ? (
-// //               <button
-// //                 onClick={() => setIsEditing(true)}
-// //                 className="bg-indigo-500 text-white px-6 py-2 rounded-full"
-// //               >
-// //                 Edit
-// //               </button>
-// //             ) : (
-// //               <div className="flex gap-3">
-// //                 <button
-// //                   onClick={() => setIsEditing(false)}
-// //                   className="bg-gray-300 px-5 py-2 rounded-full"
-// //                 >
-// //                   Cancel
-// //                 </button>
-// //                 <button
-// //                   onClick={handleSave}
-// //                   className="bg-indigo-500 text-white px-5 py-2 rounded-full"
-// //                 >
-// //                   Save
-// //                 </button>
-// //               </div>
-// //             )}
-// //           </div>
-
-// //           {/* Grid */}
-// //           <div className="grid grid-cols-2 gap-6">
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">Full Name</label>
-// //               <input
-// //                 value={user?.fullname || ""}
-// //                 disabled
-// //                 className="w-full p-3 rounded-xl bg-gray-100 border"
-// //               />
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">Email</label>
-// //               <input
-// //                 value={user?.email || ""}
-// //                 disabled
-// //                 className="w-full p-3 rounded-xl bg-gray-100 border"
-// //               />
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">Phone</label>
-// //               <input
-// //                 name="phone"
-// //                 value={formData.phone}
-// //                 disabled={!isEditing}
-// //                 onChange={handleChange}
-// //                 className="w-full p-3 rounded-xl border"
-// //               />
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">Experience</label>
-// //               <input
-// //                 name="experience"
-// //                 value={formData.experience}
-// //                 disabled={!isEditing}
-// //                 onChange={handleChange}
-// //                 className="w-full p-3 rounded-xl border"
-// //               />
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">Qualification</label>
-// //               <input
-// //                 name="qualification"
-// //                 value={formData.qualification}
-// //                 disabled={!isEditing}
-// //                 onChange={handleChange}
-// //                 className="w-full p-3 rounded-xl border"
-// //               />
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">State</label>
-// //               <select
-// //                 name="state_id"
-// //                 value={formData.state_id}
-// //                 disabled={!isEditing}
-// //                 onChange={handleStateChange}
-// //                 className="w-full p-3 rounded-xl border"
-// //               >
-// //                 <option value="">Select State</option>
-// //                 {states.map((state) => (
-// //                   <option key={state.state_id} value={state.state_id}>
-// //                     {state.state_name}
-// //                   </option>
-// //                 ))}
-// //               </select>
-// //             </div>
-
-// //             <div>
-// //               <label className="block text-gray-600 mb-2">City</label>
-// //               <select
-// //                 name="city_id"
-// //                 value={formData.city_id}
-// //                 disabled={!isEditing}
-// //                 onChange={handleChange}
-// //                 className="w-full p-3 rounded-xl border"
-// //               >
-// //                 <option value="">Select City</option>
-// //                 {cities.map((city) => (
-// //                   <option key={city.city_id} value={city.city_id}>
-// //                     {city.city_name}
-// //                   </option>
-// //                 ))}
-// //               </select>
-// //             </div>
-// //           </div>
-
-// //           {/* Bio */}
-// //           <div className="mt-6">
-// //             <label className="block text-gray-600 mb-2">Bio</label>
-// //             <textarea
-// //               name="bio"
-// //               value={formData.bio}
-// //               disabled={!isEditing}
-// //               onChange={handleChange}
-// //               className="w-full p-3 rounded-xl border"
-// //             />
-// //           </div>
-
-// //           {/* Skills */}
-// //           <div className="mt-6">
-// //             <label className="block text-gray-600 mb-2">Skills</label>
-// //             <select
-// //               multiple
-// //               value={formData.skills}
-// //               disabled={!isEditing}
-// //               onChange={(e) => handleMultiSelect(e, "skills")}
-// //               className="w-full p-3 rounded-xl border"
-// //             >
-// //               {skillOptions.map((skill, i) => (
-// //                 <option key={i} value={skill}>
-// //                   {skill}
-// //                 </option>
-// //               ))}
-// //             </select>
-// //           </div>
-
-// //           {/* Languages */}
-// //           <div className="mt-6">
-// //             <label className="block text-gray-600 mb-2">Languages</label>
-// //             <select
-// //               multiple
-// //               value={formData.language}
-// //               disabled={!isEditing}
-// //               onChange={(e) => handleMultiSelect(e, "language")}
-// //               className="w-full p-3 rounded-xl border"
-// //             >
-// //               {languageOptions.map((lang, i) => (
-// //                 <option key={i} value={lang}>
-// //                   {lang}
-// //                 </option>
-// //               ))}
-// //             </select>
-// //           </div>
-
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-// // export default InstructorProfile;
-
-// // return (
-
-// //     <div className="min-h-screen bg-gray-100">
-
-// //       {/* TOP BANNER */}
-// //       <SideBar/>
-// //       <div className="bg-indigo-600 h-48 flex items-end justify-center pb-6">
-
-// //         <div className="text-center text-white">
-
-// //           <img
-// //             src="https://via.placeholder.com/120"
-// //             className="w-28 h-28 rounded-full border-4 border-white mx-auto mb-2"
-// //           />
-
-// //           <input
-// //             name="fullname"
-// //             value={profile.fullname}
-// //             disabled={!editMode}
-// //             onChange={handleChange}
-// //             className="text-2xl font-bold text-center bg-transparent outline-none"
-// //           />
-
-// //           <p className="text-sm opacity-90">{profile.title}</p>
-
-// //         </div>
-
-// //       </div>
-
-// //       {/* CONTENT */}
-
-// //       <div className="max-w-4xl mx-auto p-6 space-y-6">
-
-// //         {/* ABOUT */}
-
-// //         <div className="bg-white p-6 rounded-xl shadow">
-
-// //           <div className="flex justify-between mb-3">
-
-// //             <h3 className="text-lg font-semibold">
-// //               About Instructor
-// //             </h3>
-
-// //             <button
-// //               onClick={() => setEditMode(!editMode)}
-// //               className="text-indigo-600 font-medium"
-// //             >
-// //               {editMode ? "Save" : "Edit"}
-// //             </button>
-
-// //           </div>
-
-// //           <textarea
-// //             name="bio"
-// //             value={profile.bio}
-// //             disabled={!editMode}
-// //             onChange={handleChange}
-// //             className="w-full border rounded-md p-3"
-// //           />
-
-// //         </div>
-
-// //         {/* PROFESSIONAL INFO */}
-
-// //         <div className="bg-white p-6 rounded-xl shadow">
-
-// //           <h3 className="text-lg font-semibold mb-4">
-// //             Professional Information
-// //           </h3>
-
-// //           <div className="grid grid-cols-2 gap-4">
-
-// //             <input
-// //               name="qualification"
-// //               value={profile.qualification}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //             <input
-// //               name="experience"
-// //               value={profile.experience}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //             <input
-// //               name="skills"
-// //               value={profile.skills}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded col-span-2"
-// //             />
-
-// //             <input
-// //               name="language"
-// //               value={profile.language}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //           </div>
-
-// //         </div>
-
-// //         {/* CONTACT */}
-
-// //         <div className="bg-white p-6 rounded-xl shadow">
-
-// //           <h3 className="text-lg font-semibold mb-4">
-// //             Contact Information
-// //           </h3>
-
-// //           <div className="grid grid-cols-2 gap-4">
-
-// //             <input
-// //               name="email"
-// //               value={profile.email}
-// //               disabled
-// //               className="border p-2 rounded"
-// //             />
-
-// //             <input
-// //               name="phone"
-// //               value={profile.phone}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //             <input
-// //               name="state"
-// //               value={profile.state}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //             <input
-// //               name="city"
-// //               value={profile.city}
-// //               disabled={!editMode}
-// //               onChange={handleChange}
-// //               className="border p-2 rounded"
-// //             />
-
-// //           </div>
-
-// //         </div>
-
-// //       </div>
-
-// //     </div>
-
-// //   );
-
-// return (
-//   <div className="min-h-screen bg-gray-100 p-6">
-//     <SideBar />
-
-//     <div className="max-w-4xl mx-auto space-y-6">
-
-//       {/* Header */}
-//       <div className="flex justify-between items-center">
-//         <h2 className="text-2xl font-bold">Instructor Profile</h2>
-
-//         {!isEditing ? (
-//           <button
-//             onClick={() => setIsEditing(true)}
-//             className="bg-indigo-500 text-white px-5 py-2 rounded"
-//           >
-//             Edit
-//           </button>
-//         ) : (
-//           <div className="flex gap-3">
-//             <button
-//               onClick={() => setIsEditing(false)}
-//               className="bg-gray-300 px-4 py-2 rounded"
-//             >
-//               Cancel
-//             </button>
-//             <button
-//               onClick={handleSave}
-//               className="bg-indigo-500 text-white px-4 py-2 rounded"
-//             >
-//               Save
-//             </button>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Profile Image */}
-//       <div className="bg-white p-6 rounded shadow text-center">
-//        <input
-//           name="name"
-//           value={formData.fullname}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           placeholder="Name"
-//           className="border p-2 rounded"
-//         />
-//         {/* <img
-//           src={formData.photo || "https://via.placeholder.com/120"}
-//           className="w-28 h-28 rounded-full mx-auto mb-3"
-//         /> */}
-//       </div>
-
-//       {/* Basic Info */}
-//       <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-
-//         <select
-//           name="gender"
-//           value={formData.gender}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           className="border p-2 rounded"
-//         >
-//           <option value="">Select Gender</option>
-//           <option value="Male">Male</option>
-//           <option value="Female">Female</option>
-//         </select>
-
-//         <input
-//           name="mobile"
-//           value={formData.mobile}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           placeholder="Mobile"
-//           className="border p-2 rounded"
-//         />
-
-//       </div>
-
-//       {/* Professional Info */}
-//       <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-
-//         <input
-//           name="qualification"
-//           value={formData.qualification}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           placeholder="Qualification"
-//           className="border p-2 rounded"
-//         />
-
-//         <input
-//           name="experience"
-//           value={formData.experience}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           placeholder="Experience"
-//           className="border p-2 rounded"
-//         />
-
-//         <textarea
-//           name="bio"
-//           value={formData.bio}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           placeholder="Bio"
-//           className="border p-2 rounded"
-//         />
-
-//       </div>
-
-//       {/* Skills */}
-//       <div className="bg-white p-6 rounded shadow">
-//         <label className="block mb-2">Skills</label>
-//         <select
-//           multiple
-//           value={formData.skills}
-//           disabled={!isEditing}
-//           onChange={(e) => handleMultiSelect(e, "skills")}
-//           className="w-full border p-2 rounded"
-//         >
-//           {skillOptions.map((s, i) => (
-//             <option key={i} value={s}>{s}</option>
-//           ))}
-//         </select>
-//       </div>
-
-//       {/* Languages */}
-//       <div className="bg-white p-6 rounded shadow">
-//         <label className="block mb-2">Languages</label>
-//         <select
-//           multiple
-//           value={formData.language}
-//           disabled={!isEditing}
-//           onChange={(e) => handleMultiSelect(e, "language")}
-//           className="w-full border p-2 rounded"
-//         >
-//           {languageOptions.map((l, i) => (
-//             <option key={i} value={l}>{l}</option>
-//           ))}
-//         </select>
-//       </div>
-
-//       {/* Location */}
-//       <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-
-//         <select
-//           name="state_id"
-//           value={formData.state_id}
-//           disabled={!isEditing}
-//           onChange={handleStateChange}
-//           className="border p-2 rounded"
-//         >
-//           <option value="">Select State</option>
-//           {states.map((s) => (
-//             <option key={s.state_id} value={s.state_id}>
-//               {s.state_name}
-//             </option>
-//           ))}
-//         </select>
-
-//         <select
-//           name="city_id"
-//           value={formData.city_id}
-//           disabled={!isEditing}
-//           onChange={handleChange}
-//           className="border p-2 rounded"
-//         >
-//           <option value="">Select City</option>
-//           {cities.map((c) => (
-//             <option key={c.city_id} value={c.city_id}>
-//               {c.city_name}
-//             </option>
-//           ))}
-//         </select>
-
-//       </div>
-
-//     </div>
-//   </div>
-// );
-// }
-
-// export default InstructorProfile;
-import { useEffect, useState } from "react";
+import { useEffect, useState, } from "react";
 import SideBar from "../components/SideBar";
 import Api from "../services/Api";
-
+import { useNavigate } from "react-router-dom";
 function InstructorProfile() {
-  const [isEditing, setIsEditing] = useState(false);
+
+const [isEditing, setIsEditing] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [user, setUser] = useState(null);
-
+  const [authUser, setAuthUser] = useState(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullname: "",
     gender: "",
     mobile: "",
-    qualification: "",
+    qualification: [],
     experience: "",
     skills: [],
     bio: "",
@@ -799,52 +22,72 @@ function InstructorProfile() {
     city_id: "",
   });
 
-  // ✅ Load Logged-in User (name/email)
+  // ================= GET USER + PROFILE =================
   useEffect(() => {
-    Api.get("/me")
-      .then((res) => setUser(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
-  // ✅ Load Instructor Profile (based on token)
-  useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserAndProfile = async () => {
       try {
-        const res = await Api.get("/my_instructor_profile");
-        const data = res.data;
+        //  Get logged user
+        const res = await Api.get("/me");
 
-        setFormData({
-          fullname: data.user?.fullname || "",
-          gender: data.gender || "",
-          mobile: data.mobile || "",
-          qualification: data.qualification || "",
-          experience: data.experience || "",
-          skills: data.skills ? data.skills.split(",") : [],
-          bio: data.bio || "",
-          language: data.language ? data.language.split(",") : [],
-          state_id: data.state_id || "",
-          city_id: data.city_id || "",
-        });
+        const user = res.data;
+        setAuthUser(user);
 
-        if (data.state_id) {
-          fetchCities(data.state_id);
-        }
+        setFormData((prev) => ({
+          ...prev,
+          fullname: user.fullname || "",
+        }));
+
+        //  CALL PROFILE API (IMPORTANT FIX)
+        fetchInstructor(user.user_id);
+
       } catch (err) {
-        console.log(err);
+        console.log("USER ERROR:", err);
       }
     };
 
-    fetchProfile();
+    fetchUserAndProfile();
   }, []);
 
-  // ✅ Load States
+  // ================= FETCH INSTRUCTOR PROFILE =================
+  const fetchInstructor = async (user_id) => {
+    try {
+      const res = await Api.get(`/get_instructor_by_user/${user_id}`);
+
+      const data = res.data;
+      console.log("PROFILE DATA:", data);
+
+      setFormData((prev) => ({
+        ...prev,
+        gender: data.gender || "",
+        mobile: data.mobile || "",
+        qualification: data.qualification
+        ? data.qualification.split(",").map((q) => q.trim())
+        : [],
+        experience: data.experience || "",
+        skills: data.skills ? data.skills.split(",") : [],
+        bio: data.bio || "",
+        language: data.language ? data.language.split(",") : [],
+        state_id: data.state_id || "",
+        city_id: data.city_id || "",
+      }));
+
+      if (data.state_id) {
+        fetchCities(data.state_id);
+      }
+
+    } catch (err) {
+      console.log("PROFILE ERROR:", err);
+    }
+  };
+
+  // ================= LOAD STATES =================
   useEffect(() => {
     Api.get("/states")
       .then((res) => setStates(res.data))
       .catch((err) => console.log(err));
   }, []);
 
-  // ✅ Load Cities
+  // ================= LOAD CITIES =================
   const fetchCities = async (stateId) => {
     try {
       const res = await Api.get(`/cities/${stateId}`);
@@ -854,13 +97,13 @@ function InstructorProfile() {
     }
   };
 
-  // ✅ Input Change
+  // ================= INPUT CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ State Change
+  // ================= STATE CHANGE =================
   const handleStateChange = (e) => {
     const stateId = e.target.value;
 
@@ -877,7 +120,7 @@ function InstructorProfile() {
     }
   };
 
-  // ✅ Multi Select
+  // ================= MULTI SELECT =================
   const handleMultiSelect = (e, field) => {
     const selected = Array.from(e.target.selectedOptions, (o) => o.value);
 
@@ -887,13 +130,13 @@ function InstructorProfile() {
     }));
   };
 
-  // ✅ Save Profile
+  // ================= SAVE PROFILE =================
   const handleSave = async () => {
     try {
       await Api.post(`/insert_update_instructor_profile`, {
         gender: formData.gender || null,
         mobile: formData.mobile || null,
-        qualification: formData.qualification || null,
+        qualification: formData.qualification.length ? formData.qualification.join(",") : null,
         experience: formData.experience || null,
         bio: formData.bio || null,
         state_id: formData.state_id ? Number(formData.state_id) : null,
@@ -910,179 +153,396 @@ function InstructorProfile() {
     }
   };
 
-  const skillOptions = ["Java", "Python", "React", "Node.js", "AI"];
-  const languageOptions = ["English", "Hindi", "Gujarati"];
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <SideBar />
 
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Instructor Profile</h2>
+  const skillOptions = [ // Programming
+  "C", "C++", "Java", "Python", "JavaScript",
 
-          {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-indigo-500 text-white px-5 py-2 rounded"
-            >
-              Edit
-            </button>
-          ) : (
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-300 px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="bg-indigo-500 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div>
+  // Development
+  "Full Stack Development",
+  "Frontend Development",
+  "Backend Development",
+  "React",
+  "Angular",
+  "Node.js",
 
-        {/* User Info */}
-        <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-          <input
-            value={user?.fullname || ""}
-            disabled
-            className="border p-2 rounded"
-          />
+  // AI / Data
+  "Machine Learning",
+  "Deep Learning",
+  "Artificial Intelligence",
+  "Data Science",
+  "Data Analytics",
+  "Generative AI",
+  "Natural Language Processing (NLP)",
+  "Computer Vision",
 
-          <input
-            value={user?.email || ""}
-            disabled
-            className="border p-2 rounded"
-          />
-        </div>
+  // DevOps / Cloud
+  "DevOps",
+  "Cloud Computing",
+  "AWS",
+  "Azure",
+  "Docker",
+  "Kubernetes",
 
-        {/* Basic Info */}
-        <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-          <select
-            name="gender"
-            value={formData.gender}
-            disabled={!isEditing}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
+  // Security / Blockchain
+  "Cyber Security",
+  "Ethical Hacking",
+  "Blockchain",
+  "Web3",
 
-          <input
-            name="mobile"
-            value={formData.mobile}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder="Mobile"
-            className="border p-2 rounded"
-          />
-        </div>
+  // Marketing
+  "Digital Marketing",
+  "Social Media Marketing",
+  "Search Engine Optimization (SEO)",
+  "Google Ads",
+  "Meta Ads",
+  "Content Marketing",
+  "Email Marketing",
+  "Affiliate Marketing",
+  "Influencer Marketing",
+  "Performance Marketing",
 
-        {/* Professional Info */}
-        <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-          <input
-            name="qualification"
-            value={formData.qualification}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder="Qualification"
-            className="border p-2 rounded"
-          />
+  // Business / Management
+  "Business Development",
+  "Product Management",
+  "Project Management",
+  "Entrepreneurship",
+  "Startup Strategy",
+  "Business Analytics",
 
-          <input
-            name="experience"
-            value={formData.experience}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder="Experience"
-            className="border p-2 rounded"
-          />
+  // Design / Creative
+  "UI/UX Design",
+  "Graphic Design",
+  "Video Editing",
+  "Motion Graphics",
+  "Content Creation",
+  "Personal Branding",
 
-          <textarea
-            name="bio"
-            value={formData.bio}
-            disabled={!isEditing}
-            onChange={handleChange}
-            placeholder="Bio"
-            className="border p-2 rounded col-span-2"
-          />
-        </div>
+  // Modern Tech
+  "No-Code / Low-Code Development",
+  "Automation",
+  "Prompt Engineering",
+  "AR/VR",
+  "Internet of Things (IoT)"];
 
-        {/* Skills */}
-        <div className="bg-white p-6 rounded shadow">
-          <label className="block mb-2">Skills</label>
-          <select
-            multiple
-            value={formData.skills}
-            disabled={!isEditing}
-            onChange={(e) => handleMultiSelect(e, "skills")}
-            className="w-full border p-2 rounded"
-          >
-            {skillOptions.map((s, i) => (
-              <option key={i} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
+  const languageOptions = ["English",
+  "Hindi",
+  "Gujarati",
+  "Marathi",
+  "Tamil",
+  "Telugu",
+  "Kannada",
+  "Malayalam",
+  "Punjabi",
+  "Bengali",
+  "Urdu"];
 
-        {/* Languages */}
-        <div className="bg-white p-6 rounded shadow">
-          <label className="block mb-2">Languages</label>
-          <select
-            multiple
-            value={formData.language}
-            disabled={!isEditing}
-            onChange={(e) => handleMultiSelect(e, "language")}
-            className="w-full border p-2 rounded"
-          >
-            {languageOptions.map((l, i) => (
-              <option key={i} value={l}>{l}</option>
-            ))}
-          </select>
-        </div>
+  const QualificationOptions = [ "BCA",
+    "BSc - Computer Science",
+    "BSc - IT",
+    "B.Tech - Computer Science",
+    "B.Tech - IT",
+    "B.Tech - AI & ML",
+    "B.E - Computer Engineering",
+    "BCom - Bachelor of Commerce",
+    "BBA",
+    "BA",
+    "MCA",
+    "MSc - Computer Science",
+    "MSc - Data Science",
+    "M.Tech - Computer Science",
+    "MBA - IT",
+    "MBA - Business Analytics",
+    "Diploma - Computer Engineering",
+    "Diploma - IT",
+    "Self-Taught",
+    "Working Professional - IT",
+    "Working Professional - Non-IT",
+    "Computer Science",
+    "Information Technology",
+    "Artificial Intelligence",
+    "Data Science",
+    "Cyber Security",
+    "Business Administration",
+    "Commerce",
+    "Arts",]
 
-        {/* Location */}
-        <div className="bg-white p-6 rounded shadow grid grid-cols-2 gap-4">
-          <select
-            name="state_id"
-            value={formData.state_id}
-            disabled={!isEditing}
-            onChange={handleStateChange}
-            className="border p-2 rounded"
-          >
-            <option value="">Select State</option>
-            {states.map((s) => (
-              <option key={s.state_id} value={s.state_id}>
-                {s.state_name}
-              </option>
-            ))}
-          </select>
 
-          <select
-            name="city_id"
-            value={formData.city_id}
-            disabled={!isEditing}
-            onChange={handleChange}
-            className="border p-2 rounded"
-          >
-            <option value="">Select City</option>
-            {cities.map((c) => (
-              <option key={c.city_id} value={c.city_id}>
-                {c.city_name}
-              </option>
-            ))}
-          </select>
+
+return (
+  <div className="min-h-screen bg-gray-100 flex">
+  <SideBar />
+
+  <div className="flex-1 p-8">
+    <div className="max-w-5xl mx-auto space-y-6">
+
+      {/* HEADER */}
+      <div className="bg-white p-6 rounded-2xl shadow flex justify-between items-center">
+
+  {/* LEFT SIDE (PHOTO + INFO) */}
+  <div className="flex items-center gap-4">
+
+    {/* PROFILE PHOTO */}
+    <img
+      src={`http://localhost:8000/instructor_photo/${authUser?.user_id}`}
+      alt="profile"
+      className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500"
+      onError={(e) => {
+        e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      }}
+    />
+
+    {/* NAME + EMAIL */}
+    <div>
+      <h2 className="text-xl font-bold text-gray-800">
+        {formData.fullname || "No Name"}
+      </h2>
+      <p className="text-gray-500 text-sm">{authUser?.email}</p>
+    </div>
+
+  </div>
+
+  {/* EDIT BUTTON */}
+  <button
+    onClick={() => navigate("/editinstructorprofile")}
+    className="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700"
+  >
+    Edit Profile
+  </button>
+
+</div>
+
+      {/* BASIC INFO */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Basic Information
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+          <p><span className="font-semibold">Gender:</span> {formData.gender || "-"}</p>
+          <p><span className="font-semibold">Mobile:</span> {formData.mobile || "-"}</p>
+          <p><span className="font-semibold">Experience:</span> {formData.experience || "-"} years</p>
+          <p>
+            <span className="font-semibold">State:</span>{" "}
+            {states.find(s => s.state_id == formData.state_id)?.state_name || "-"}
+          </p>
+          <p>
+            <span className="font-semibold">City:</span>{" "}
+            {cities.find(c => c.city_id == formData.city_id)?.city_name || "-"}
+          </p>
         </div>
       </div>
-    </div>
-  );
-}
 
+      {/* BIO */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-2 border-b pb-2">
+          About
+        </h3>
+        <p className="text-gray-600">
+          {formData.bio || "No bio available"}
+        </p>
+      </div>
+
+      {/* QUALIFICATIONS */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Qualifications
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.qualification.length > 0 ? (
+            formData.qualification.map((q, i) => (
+              <span
+                key={i}
+                className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+              >
+                {q}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500">No data</p>
+          )}
+        </div>
+      </div>
+
+      {/* SKILLS */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Skills
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.skills.length > 0 ? (
+            formData.skills.map((skill, i) => (
+              <span
+                key={i}
+                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500">No data</p>
+          )}
+        </div>
+      </div>
+
+      {/* LANGUAGES */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Languages
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.language.length > 0 ? (
+            formData.language.map((lang, i) => (
+              <span
+                key={i}
+                className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm"
+              >
+                {lang}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500">No data</p>
+          )}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+);
+}
 export default InstructorProfile;
+
+
+// import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import SideBar from "../components/SideBar";
+// import Api from "../services/Api";
+
+// function InstructorProfile() {
+//   const [profile, setProfile] = useState(null);
+//   const [user, setUser] = useState(null);
+
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const userRes = await Api.get("/me");
+//         setUser(userRes.data);
+
+//         const profileRes = await Api.get(
+//           `/get_instructor_by_user/${userRes.data.user_id}`
+//         );
+
+//         if (profileRes.data.exists) {
+//           setProfile(profileRes.data);
+//         }
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   return (
+//     <div className="flex bg-gray-100 min-h-screen">
+//       <SideBar />
+
+//       <div className="flex-1 p-8 flex justify-center items-start">
+//         <div className="w-full max-w-5xl">
+
+//           {/* CARD */}
+//           <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+
+//             {/* HEADER */}
+//             <div className="flex justify-between items-center border-b pb-4">
+//               <div>
+//                 <h2 className="text-2xl font-bold text-gray-800">
+//                   Instructor Profile
+//                 </h2>
+//                 <p className="text-gray-500 text-sm">
+//                   Your professional information
+//                 </p>
+//               </div>
+
+//               <button
+//                 onClick={() => navigate("/edit-instructor-profile")}
+//                 className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+//               >
+//                 Edit Profile
+//               </button>
+//             </div>
+
+//             {/* PROFILE IMAGE */}
+//             <div className="flex items-center gap-5">
+//               <img
+//                 src={`http://localhost:8000/instructor_photo/${user?.user_id}`}
+//                 className="w-24 h-24 rounded-full object-cover border-4 border-indigo-500"
+//                 alt="profile"
+//               />
+
+//               <div>
+//                 <h3 className="text-xl font-semibold">
+//                   {user?.fullname || "Instructor"}
+//                 </h3>
+//                 <p className="text-gray-500">{user?.email}</p>
+//               </div>
+//             </div>
+
+//             {/* DATA GRID */}
+//             <div className="grid md:grid-cols-2 gap-6 text-sm">
+
+//               <ProfileItem label="Gender" value={profile?.gender} />
+//               <ProfileItem label="Mobile" value={profile?.mobile} />
+//               <ProfileItem label="Experience" value={profile?.experience + " Years"} />
+//               <ProfileItem label="State" value={profile?.state_id} />
+//               <ProfileItem label="City" value={profile?.city_id} />
+
+//             </div>
+
+//             {/* FULL WIDTH */}
+//             <ProfileBlock label="Qualification" value={profile?.qualification} />
+//             <ProfileBlock label="Skills" value={profile?.skills} />
+//             <ProfileBlock label="Languages" value={profile?.language} />
+//             <ProfileBlock label="Bio" value={profile?.bio} />
+
+//           </div>
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default InstructorProfile;
+
+
+// function ProfileItem({ label, value }) {
+//   return (
+//     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+//       <p className="text-gray-500 text-xs">{label}</p>
+//       <p className="font-semibold text-gray-800 mt-1">
+//         {value || "Not provided"}
+//       </p>
+//     </div>
+//   );
+// }
+
+// function ProfileBlock({ label, value }) {
+//   return (
+//     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+//       <p className="text-gray-500 text-xs mb-1">{label}</p>
+//       <p className="text-gray-800">
+//         {value || "Not provided"}
+//       </p>
+//     </div>
+//   );
+// }
+
+

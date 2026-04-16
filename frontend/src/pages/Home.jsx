@@ -20,7 +20,16 @@ function Home() {
             <WhySmartAi />
             <CourseSlider />
       </div>
-      
-  )
+  )             
 }
-export default Home;    
+export default Home;  
+
+
+
+
+
+
+
+
+
+

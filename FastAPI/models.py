@@ -1,4 +1,5 @@
 from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float,DateTime
+from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float,DateTime,UniqueConstraint
 from database import Base
 from sqlalchemy.orm import relationship
 from datetime import date, datetime
@@ -19,6 +20,9 @@ class Users(Base):
     fullname = Column(String(50), nullable=False)
     email = Column(String(50),unique=True, nullable=False)
     password = Column(String(255), nullable=False)
+    email = Column(String(50),unique=True)
+    password = Column(String(255),nullable=False)
+
 
     students = relationship("Student", back_populates="user")
     contacts = relationship("Contact",back_populates="user")
@@ -29,8 +33,10 @@ class Users(Base):
       # # Stores expiry time
       # is_verified = Column(Boolean, default=False)  
       # # Email verified or not
-    students = relationship("Student", back_populates="user")
-    contacts = relationship("Contact", back_populates="user")
+    # students = relationship("Student", back_populates="user")
+    # contacts = relationship("Contact", back_populates="user")
+    course_views = relationship("CourseView", back_populates="user")
+    courses = relationship("Course", back_populates="user")
 
 
 class Blog(Base):
@@ -69,6 +75,7 @@ class Student(Base):
     city_id = Column(Integer, ForeignKey("cities.city_id"))
     skills = Column(String(255))
     language = Column(String(100))
+    photo = Column(String(255))
     
     user = relationship("Users", back_populates='students')
     state = relationship("State")
@@ -86,18 +93,6 @@ class Contact(Base):
 
 class Course(Base):
     __tablename__ = 'course'
-    # course_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    # course_title = Column(Text, nullable=False)
-    # category = Column(String(50), nullable=False)
-    # skill_level = Column(String(20), nullable=False)
-    # prerequisites = Column(Text, nullable=False)
-    # description = Column(Text, nullable=False)
-    # tag = Column(Text, nullable=False)
-    # thumbnail = Column(Text, nullable=False)
-    # video = Column(Text, nullable=False, unique=True)
-    # course_price = Column(Integer, nullable=False)
-    # course_date = Column(Date, default=date.today)
-    # course_time = Column(Time, default=datetime.now().time)
 
     course_id=Column(Integer,primary_key=True,index=True,autoincrement=True)
     course_title=Column(Text,nullable=False)
@@ -113,6 +108,13 @@ class Course(Base):
     course_time=Column(Time,default=datetime.now().time)
     rating = Column(Float, default=0)
     total_reviews = Column(Integer, default=0)
+    instructor_id = Column(Integer, ForeignKey("instructor.instructor_id"))
+    user_id = Column(Integer, ForeignKey("user.user_id"))
+
+     # Relationships
+    instructor = relationship("Instructor", back_populates="courses")
+    user = relationship("Users", back_populates="courses")
+    course_views = relationship("CourseView", back_populates="course")
 
 class Instructor(Base):
     __tablename__ = 'instructor'
@@ -141,11 +143,36 @@ class Instructor(Base):
     user = relationship("Users", back_populates='instructor')
     state = relationship("State")
     city = relationship("City")
+    courses = relationship("Course", back_populates="instructor")
+
+# class OTP(Base):
+#     __tablename__ = "otp_table"
+
+#     otp_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+#     courses = relationship("Course", back_populates="instructor")
+
+
+class CourseView(Base):
+    __tablename__ = "course_views"
+
+    courseview_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("course.course_id"), nullable=False)
+    viewed_at = Column(Time,default=datetime.now().time)
+
+    user = relationship("Users", back_populates="course_views")
+    course = relationship("Course", back_populates="course_views")
+
+    __table_args__ = (
+    UniqueConstraint('user_id', 'course_id', name='unique_user_course'),
+)
+
+
 
 class OTP(Base):
-    __tablename__ = "otp_table"
+    __tablename__ = 'otp_table'
 
-    otp_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    otp_id = Column(Integer,primary_key=True,autoincrement=True,index=True)
     admin_email = Column(String,ForeignKey('admin.admin_email'),index=True)
     otp = Column(String)
     expiry = Column(DateTime)

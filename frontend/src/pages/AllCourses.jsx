@@ -128,27 +128,27 @@ return (
                   </h3>
 
                  <div className="flex items-center gap-1 mt-1">
-  {[1,2,3,4,5].map((star) => {
-    const rating = data.rating || 0;
+                    {[1,2,3,4,5].map((star) => {
+                      const rating = data.rating || 0;
 
-    if (rating >= star) {
-      return <FaStar key={star} className="text-yellow-500" />;
-    } else if (rating >= star - 0.5) {
-      return <FaStarHalfAlt key={star} className="text-yellow-500" />;
-    } else {
-      return <FaRegStar key={star} className="text-yellow-500" />;
-    }
-  })}
+                      if (rating >= star) {
+                        return <FaStar key={star} className="text-yellow-500" />;
+                      } else if (rating >= star - 0.5) {
+                        return <FaStarHalfAlt key={star} className="text-yellow-500" />;
+                      } else {
+                        return <FaRegStar key={star} className="text-yellow-500" />;
+                      }
+                    })}
 
-  {/* Rating + Reviews */}
-  <span className="text-sm text-gray-700 ml-1">
-    {(data.rating || 0).toFixed(1)}
-  </span>
+                    {/* Rating + Reviews */}
+                    <span className="text-sm text-gray-700 ml-1">
+                      {(data.rating || 0).toFixed(1)}
+                    </span>
 
-  <span className="text-xs text-gray-500 ml-1">
-    ({data.total_reviews || 0})
-  </span>
-</div>
+                    <span className="text-xs text-gray-500 ml-1">
+                      ({data.total_reviews || 0})
+                    </span>
+                  </div>
 
                   {/* Allow user to rate
                   <div className="flex gap-1 mt-1">
