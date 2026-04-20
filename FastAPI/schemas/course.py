@@ -14,3 +14,10 @@ class CourseRequest(BaseModel):
 class CourseRatingRequest(BaseModel):
     course_id: int
     rating: int
+
+
+
+class CourseViewPercentage(BaseModel):
+    course_id: int
+    total_views: int
+    percentage: float

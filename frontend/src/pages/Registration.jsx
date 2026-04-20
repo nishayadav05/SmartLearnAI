@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate,Link } from "react-router-dom";
 import Api from "../services/Api";
-import { hashPassword } from "../utils/hash";
+// import { hashPassword } from "../utils/hash";
 
 const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,12 +27,12 @@ function Registration() {
  
   const handleSubmit =async(e)=>{
       e.preventDefault();
-      const hashed = await hashPassword(password);
-      console.log("HASHED PASSWORD:", hashed);
+      // const hashed = await hashPassword(password);
+      // console.log("HASHED PASSWORD:", hashed);
       const formdata = new FormData();
       formdata.append("fullname",fullname);
       formdata.append("email",email);
-      formdata.append("password", hashed);
+      formdata.append("password", password);
       
       if (emailError || passwordError || matchError) {
         alert("Fix validation errors first");

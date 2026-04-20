@@ -9,11 +9,6 @@ function Course() {
   const [active, setActive] = useState(0);
   const [coursedata, setCourseData] = useState([]);
 
-  // const fetchdata = async () => {
-  //   const response = await Api.get("/course_display");
-  //   setCourseData(response.data);
-  // };
-
   const fetchdata = async () => {
   const response = await Api.get("/course_display");
   console.log("Fetched courses:", response.data);

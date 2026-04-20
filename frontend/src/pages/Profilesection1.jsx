@@ -1,119 +1,95 @@
-
 import { useEffect, useState } from "react";
-import Sidebar1 from "../components/Sidebar1";
+import Sidebar1 from "../components/sidebar1";
 import Api from "../services/Api";
 import { useParams } from "react-router-dom";
 
 function Profilesection1() {
 
-    const { stud_id } = useParams();
+  const { stud_id } = useParams();
 
-  // LOAD PROFILE 
+  const [isEditing, setIsEditing] = useState(false);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const [userId, setUserId] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
+
+  const [formData, setFormData] = useState({
+    fullname: "",
+    age: "",
+    education: "",
+    state_id: "",
+    city_id: "",
+    skills: [],
+    languages: [],
+  });
+
+  // ================= GET LOGGED USER =================
   useEffect(() => {
-    if (!stud_id) return;
+    const token = localStorage.getItem("token");
 
-      const [isEditing, setIsEditing] = useState(false);
-      const [states, setStates] = useState([]);
-      const [cities, setCities] = useState([]);
+    Api.get("/me", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        setUserId(res.data.user_id);
+        setAuthUser(res.data);
 
-      const [formData, setFormData] = useState({
-        fullname: "",
-        age: "",
-        education: "",
-        state_id: "",
-        city_id: "",
-        skills: [],
-        languages: [],
-      });
+        setFormData((prev) => ({
+          ...prev,
+          fullname: res.data.fullname || ""
+        }));
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
-      // ================= GET LOGGED USER =================
-      useEffect(() => {
-        const token = localStorage.getItem("token");
+  // ================= LOAD PROFILE =================
+  useEffect(() => {
+    if (!userId) return;
 
-        Api.get("/me", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-          .then((res) => {
-            console.log("Logged User:", res.data);
+    const fetchProfile = async () => {
+      try {
+        const res = await Api.get("/get_student_by_user",{
+           withCredentials: true
+        });
+        const data = res.data;
 
-            // FIXED HERE
-            setUserId(res.data.user_id);
-            setAuthUser(res.data);
+        setFormData((prev) => ({
+          ...prev,
+          age: data.age || "",
+          education: data.education || "",
+          state_id: data.state_id || "",
+          city_id: data.city_id || "",
+          skills: data.skills
+            ? data.skills.split(",").map((s) => s.trim())
+            : [],
+          languages: data.language
+            ? data.language.split(",").map((l) => l.trim())
+            : [],
+        }));
 
-            setFormData((prev) => ({
-              ...prev,
-              fullname: res.data.fullname || ""
-            }));
-          })
-          .catch((err) => console.log(err));
-      }, []);
-
-      // ================= LOAD PROFILE =================
-    useEffect(() => {
-        if (!userId) return;
-
-        const fetchProfile = async () => {
-          try {
-            const res = await Api.get(`/get_student_by_user/${userId}`);
-            const data = res.data;
-
-            setFormData((prev) => ({
-              ...prev,
-              age: data.age || "",
-              education: data.education || "",
-              state_id: data.state_id || "",
-              city_id: data.city_id || "",
-              skills: data.skills
-                ? data.skills.split(",").map((s) => s.trim())
-                : [],
-              languages: data.language
-                ? data.language.split(",").map((l) => l.trim())
-                : [],
-            }));
-
-            if (data.state_id) {
-              fetchCities(data.state_id);
-            }
-
-          } catch (err) {
-            console.log("Profile Error:", err);
-          }
-        };
-
-        fetchProfile();
-      }, [userId]);
-
-
-      // ================= LOAD STATES =================
-      useEffect(() => {
-        Api.get("/states")
-          .then((res) => setStates(res.data))
-          .catch((err) => console.log(err));
-      }, []);
-
-      // ================= LOAD CITIES =================
-      const fetchCities = async (stateId) => {
-        try {
-          const res = await Api.get(`/cities/${stateId}`);
-          setCities(res.data);
-        } catch (error) {
-          console.error(error);
+        if (data.state_id) {
+          fetchCities(data.state_id);
         }
-      };
+
+      } catch (err) {
+        console.log("Profile Error:", err);
+      }
+    };
 
     fetchProfile();
-  }, [stud_id]);
+  }, [userId]);
 
-  // LOAD STATES
+  // ================= LOAD STATES =================
   useEffect(() => {
     Api.get("/states")
       .then((res) => setStates(res.data))
       .catch((err) => console.log(err));
   }, []);
 
-  // LOAD CITIES
+  // ================= LOAD CITIES =================
   const fetchCities = async (stateId) => {
     try {
       const res = await Api.get(`/cities/${stateId}`);
@@ -123,7 +99,7 @@ function Profilesection1() {
     }
   };
 
-  // INPUT HANDLER 
+  // ================= INPUT HANDLER =================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -157,58 +133,63 @@ function Profilesection1() {
     }));
   };
 
-      // ================= UPDATE =================
-      const handleUpdate = async () => {
-          const payload = {
-            age: formData.age ? Number(formData.age) : null,
-            education: formData.education || null,
-            state_id: formData.state_id ? Number(formData.state_id) : null,
-            city_id: formData.city_id ? Number(formData.city_id) : null,
-            skills: formData.skills,
-            language: formData.languages,
-          };
+  // ================= UPDATE =================
+  const handleUpdate = async () => {
+    const payload = {
+      age: formData.age ? Number(formData.age) : null,
+      education: formData.education || null,
+      state_id: formData.state_id ? Number(formData.state_id) : null,
+      city_id: formData.city_id ? Number(formData.city_id) : null,
+      skills: formData.skills,
+      language: formData.languages,
+    };
 
-          try {
-            await Api.post(`/insert_update_profile/${userId}`, payload);
-            alert("Updated Successfully!");
-            setIsEditing(false);
-          } catch (err) {
-            console.log(err);
-            alert("Update Failed");
-          }
-        };
+    try {
+      await Api.post(`/insert_update_profile/${userId}`, payload);
+      alert("Updated Successfully!");
+      setIsEditing(false);
+    } catch (err) {
+      console.log(err);
+      alert("Update Failed");
+    }
+  };
+
 
   // OPTIONS
   const educationOptions = [
-    "BCA",
-    "BSc - Computer Science",
-    "BSc - IT",
-    "B.Tech - Computer Science",
-    "B.Tech - IT",
-    "B.Tech - AI & ML",
-    "B.E - Computer Engineering",
-    "BCom",
-    "BBA",
-    "BA",
-    "MCA",
-    "MSc - Computer Science",
-    "MSc - Data Science",
-    "M.Tech - Computer Science",
-    "MBA - IT",
-    "MBA - Business Analytics",
-    "Diploma - Computer Engineering",
-    "Diploma - IT",
-    "Self-Taught",
-    "Working Professional - IT",
-    "Working Professional - Non-IT",
-    "Computer Science",
-    "Information Technology",
-    "Artificial Intelligence",
-    "Data Science",
-    "Cyber Security",
-    "Business Administration",
-    "Commerce",
-    "Arts",
+  "BCA - Bachelor of Computer Applications",
+  "BSc CS - Bachelor of Science in Computer Science",
+  "BSc IT - Bachelor of Science in Information Technology",
+  "B.Tech CS - Bachelor of Technology in Computer Science",
+  "B.Tech IT - Bachelor of Technology in Information Technology",
+  "B.Tech AI & ML - Bachelor of Technology in Artificial Intelligence & Machine Learning",
+  "B.E CE - Bachelor of Engineering in Computer Engineering",
+  "BCom - Bachelor of Commerce",
+  "BBA - Bachelor of Business Administration",
+  "BA - Bachelor of Arts",
+
+  "MCA - Master of Computer Applications",
+  "MSc CS - Master of Science in Computer Science",
+  "MSc DS - Master of Science in Data Science",
+  "M.Tech CS - Master of Technology in Computer Science",
+  "MBA IT - Master of Business Administration in Information Technology",
+  "MBA BA - Master of Business Administration in Business Analytics",
+
+  "Diploma CE - Diploma in Computer Engineering",
+  "Diploma IT - Diploma in Information Technology",
+
+  "Self-Taught - Self Learned (No Formal Degree)",
+  "Working Professional IT - Industry Experience in IT",
+  "Working Professional Non-IT - Industry Experience in Non-IT",
+
+  "Computer Science - Field of Study",
+  "Information Technology - Field of Study",
+  "Artificial Intelligence - Field of Study",
+  "Data Science - Field of Study",
+  "Cyber Security - Field of Study",
+  "Business Administration - Field of Study",
+  "Commerce - Field of Study",
+  "Arts - Field of Study"
   ];
 
 
@@ -268,16 +249,35 @@ function Profilesection1() {
   "Prompt Engineering",
   "AR/VR",
   "IoT",
-  ];
+  "Financial Reporting",
+  "Taxation (GST, Income Tax)",
+  "Auditing",
+  "Banking & Finance",
+  "Excel (Advanced)",
+  "Business Law",
+  "Communication Skills",
+  "Writing & Content Creation",
+  "Critical Thinking",
+  "Research & Analysis",
+  "Public Speaking",
+  "Creativity & Design Thinking",
+  "Social Awareness",
+  "Hardware Knowledge",
+  "Networking Basics",
+  "Software Installation & Maintenance",
+  "Technical Support",
+  "Web Basics"
+  
+];
 
   const languageOptions = [
     "English",
     "Hindi",
     "Gujarati",
-    "Spanish",
-    "French",
-    "German",
-    "Other"
+    // "Spanish",
+    // "French",
+    // "German",
+    // "Other"
   ];
 
   return (
@@ -413,48 +413,115 @@ function Profilesection1() {
               </div>
           </div>
 
-          {/* Skills */}
-          <div className="mt-6">
-            <label className="block text-gray-600 mb-2">Skills</label>
+         {/* Skills */}
+        <div className="col-span-2 mt-6">
+          <label className="block text-gray-600 mb-2">Skills</label>
 
-           <select
-              multiple
-              value={formData.skills}
-              disabled={!isEditing}
-              onChange={(e) => handleMultiSelect(e, "skills")}
-              className={`w-full p-3 rounded-xl border ${
-                isEditing ? "border-indigo-400" : "bg-gray-100"
-              }`}
-            >
-              {skillOptions.map((skill, i) => (
-                <option key={i} value={skill}>
-                  {skill}
-                </option>
-              ))}
-            </select>
+          {/* Dropdown */}
+          <select
+            disabled={!isEditing}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (value && !formData.skills.includes(value)) {
+                setFormData((prev) => ({
+                  ...prev,
+                  skills: [...prev.skills, value],
+                }));
+              }
+            }}
+            className={`w-full p-3 rounded-xl border ${
+              isEditing ? "border-indigo-400" : "bg-gray-100"
+            }`}
+          >
+            <option value="">Select Skill</option>
+            {skillOptions.map((skill, i) => (
+              <option key={i} value={skill}>
+                {skill}
+              </option>
+            ))}
+          </select>
+
+          {/* Selected Skills */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formData.skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+              >
+                {skill}
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        skills: prev.skills.filter((s) => s !== skill),
+                      }));
+                    }}
+                    className="text-red-500 font-bold"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Languages */}
-          <div className="mt-6">
-            <label className="block text-gray-600 mb-2">Languages</label>
-            <select
-              multiple
-              value={formData.languages}
-              disabled={!isEditing}
-              onChange={(e) => handleMultiSelect(e, "languages")}
-              className={`w-full p-3 rounded-xl border ${
-                  isEditing ? "border-indigo-400" : "bg-gray-100"
-                }`}
-            >
-              {languageOptions.map((lang, i) => (
-                <option key={i} value={lang}>
-                  {lang}
-                </option>
-              ))}
-            </select>
+        {/* Languages */}
+        <div className="col-span-2 mt-6">
+          <label className="block text-gray-600 mb-2">Languages</label>
+
+          {/* Dropdown */}
+          <select
+            disabled={!isEditing}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (value && !formData.languages.includes(value)) {
+                setFormData((prev) => ({
+                  ...prev,
+                  languages: [...prev.languages, value],
+                }));
+              }
+            }}
+            className={`w-full p-3 rounded-xl border ${
+              isEditing ? "border-indigo-400" : "bg-gray-100"
+            }`}
+          >
+            <option value="">Select Language</option>
+            {languageOptions.map((lang, i) => (
+              <option key={i} value={lang}>
+                {lang}
+              </option>
+            ))}
+          </select>
+
+          {/* Selected Languages */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formData.languages.map((lang, index) => (
+              <div
+                key={index}
+                className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+              >
+                {lang}
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        languages: prev.languages.filter((l) => l !== lang),
+                      }));
+                    }}
+                    className="text-red-500 font-bold"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
-          
-
+        </div>
         </div>
       </div>
     </div>
@@ -463,4 +530,3 @@ function Profilesection1() {
 
 export default Profilesection1;
 
- 

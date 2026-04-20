@@ -17,12 +17,34 @@ import CourseDisplay from "../pages/CourseDisplay";
 import AllCourses from "../pages/AllCourses";
 import { Helicopter } from "lucide-react";
 import HelpCenter from "../pages/HelpCenter";
+import Landing from "../pages/Landing";
+import { AuthProvider, AuthContext } from "../AuthContext";
+import { useContext } from "react";
+import { BrowserRouter } from "react-router-dom";
+import HelpCategory from "../pages/HelpCategory";
 
 
 function AppRoutes(){
+      const { user, loading } = useContext(AuthContext);
+
+      if (loading) return <p>Loading...</p>;
+
       return(
                   <Routes>
-                        <Route path="/" element={<Home/>}/>
+                        {/* If NOT logged in → show landing */}
+                        {!user && (
+                        <>
+                              <Route path="/" element={<Landing />} />
+                              <Route path="/login" element={<Login />} />
+                              <Route path="/registration" element={<Registration></Registration>}/>
+                        </>
+                        )}
+
+                        {/* If logged in → allow all pages */}
+                        {user && (
+                        <>
+                        <Route path="/" element={<Home />} /> 
+                        <Route path="/home" element={<Home/>}/>
                         <Route path="/about" element={<About></About>} />
                         <Route path="/login" element={<Login></Login>} />
                         <Route path="/registration" element={<Registration></Registration>}/>
@@ -35,14 +57,31 @@ function AppRoutes(){
                         <Route path="/blog" element={<Blog/>}></Route>
                         <Route path="/blogdetail/:id" element={<BlogDetail/>}></Route>
                         <Route path="/blogform" element={<BlogForm></BlogForm>}></Route>
-                        {/* <Route path="/exampleprofile" element={<ExampleProfile></ExampleProfile>}></Route> */}
-                        <Route path="/exampleprofile/:stud_id" element={<ExampleProfile></ExampleProfile>}></Route>
-                        {/* <Route path="/profilesection" element={<Profilesection1/>}></Route> */}
-                        <Route path="/profilesection/:stud_id" element={<Profilesection1/>}></Route>
+                        <Route path="/exampleprofile" element={<ExampleProfile></ExampleProfile>}></Route>
+                        <Route path="/profilesection" element={<Profilesection1/>}></Route>
                         <Route path="/coursepage" element={<CoursesPage1/>}></Route>
                         <Route path="/analyticspage" element={<Analyticssession1/>}></Route>
                         <Route path="/helpcenter" element={<HelpCenter></HelpCenter>}></Route>
+                        <Route path="/helpcategory/:category" element={<HelpCategory></HelpCategory>}></Route>
+                        </>
+                        )}
+
+                       
                   </Routes>    
+
       )
 }
-export default AppRoutes;
+// export default AppRoutes;
+
+
+function App() {
+  return (
+    <AuthProvider>
+      {/* <BrowserRouter> */}
+        <AppRoutes />
+      {/* </BrowserRouter> */}
+    </AuthProvider>
+  );
+}
+
+export default App;
