@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, } from "react";
 import SideBar from "../components/SideBar";
 import Api from "../services/Api";
-
+import { useNavigate } from "react-router-dom";
 function InstructorProfile() {
 
 const [isEditing, setIsEditing] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [authUser, setAuthUser] = useState(null);
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullname: "",
     gender: "",
@@ -271,227 +271,278 @@ const [isEditing, setIsEditing] = useState(false);
 
 return (
   <div className="min-h-screen bg-gray-100 flex">
-    <SideBar />
+  <SideBar />
 
-    <div className="flex-1 p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
+  <div className="flex-1 p-8">
+    <div className="max-w-5xl mx-auto space-y-6">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Instructor Profile
-            </h2>
-            <p className="text-sm text-gray-500">
-              Manage your personal and professional details
-            </p>
-          </div>
+      {/* HEADER */}
+      <div className="bg-white p-6 rounded-2xl shadow flex justify-between items-center">
 
-          {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
-            >
-              Edit Profile
-            </button>
+  {/* LEFT SIDE (PHOTO + INFO) */}
+  <div className="flex items-center gap-4">
+
+    {/* PROFILE PHOTO */}
+    <img
+      src={`http://localhost:8000/instructor_photo/${authUser?.user_id}`}
+      alt="profile"
+      className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500"
+      onError={(e) => {
+        e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      }}
+    />
+
+    {/* NAME + EMAIL */}
+    <div>
+      <h2 className="text-xl font-bold text-gray-800">
+        {formData.fullname || "No Name"}
+      </h2>
+      <p className="text-gray-500 text-sm">{authUser?.email}</p>
+    </div>
+
+  </div>
+
+  {/* EDIT BUTTON */}
+  <button
+    onClick={() => navigate("/editinstructorprofile")}
+    className="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700"
+  >
+    Edit Profile
+  </button>
+
+</div>
+
+      {/* BASIC INFO */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Basic Information
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+          <p><span className="font-semibold">Gender:</span> {formData.gender || "-"}</p>
+          <p><span className="font-semibold">Mobile:</span> {formData.mobile || "-"}</p>
+          <p><span className="font-semibold">Experience:</span> {formData.experience || "-"} years</p>
+          <p>
+            <span className="font-semibold">State:</span>{" "}
+            {states.find(s => s.state_id == formData.state_id)?.state_name || "-"}
+          </p>
+          <p>
+            <span className="font-semibold">City:</span>{" "}
+            {cities.find(c => c.city_id == formData.city_id)?.city_name || "-"}
+          </p>
+        </div>
+      </div>
+
+      {/* BIO */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-2 border-b pb-2">
+          About
+        </h3>
+        <p className="text-gray-600">
+          {formData.bio || "No bio available"}
+        </p>
+      </div>
+
+      {/* QUALIFICATIONS */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Qualifications
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.qualification.length > 0 ? (
+            formData.qualification.map((q, i) => (
+              <span
+                key={i}
+                className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+              >
+                {q}
+              </span>
+            ))
           ) : (
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-300 px-5 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"
-              >
-                Save
-              </button>
-            </div>
+            <p className="text-gray-500">No data</p>
           )}
         </div>
-
-        {/* USER INFO */}
-        <div className="bg-white p-6 rounded-xl shadow grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-gray-500">Full Name</label>
-            <input
-              value={formData.fullname || ""}
-              disabled
-              className="w-full mt-1 border p-2 rounded"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-500">Email</label>
-            <input
-              value={authUser?.email || ""}
-              disabled
-              className="w-full mt-1 border p-2 rounded"
-            />
-          </div>
-        </div>
-
-        {/* BASIC INFO */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Basic Information
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <select
-              name="gender"
-              value={formData.gender}
-              disabled={!isEditing}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-
-            <input
-              name="mobile"
-              value={formData.mobile}
-              disabled={!isEditing}
-              onChange={handleChange}
-              placeholder="Mobile Number"
-              className="border p-2 rounded"
-            />
-          </div>
-        </div>
-
-        {/* QUALIFICATION */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Qualification
-          </h3>
-
-          <select
-            multiple
-            value={formData.qualification || []}
-            disabled={!isEditing}
-            onChange={(e) => handleMultiSelect(e, "qualification")}
-            className="w-full border p-2 rounded h-40"
-          >
-            {QualificationOptions.map((q, i) => (
-              <option key={i} value={q}>
-                {q}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* EXPERIENCE + BIO */}
-        <div className="bg-white p-6 rounded-xl shadow grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-gray-500">Experience</label>
-            <input
-              name="experience"
-              value={formData.experience}
-              disabled={!isEditing}
-              onChange={handleChange}
-              placeholder="Years of experience"
-              className="w-full border p-2 rounded mt-1"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-500">Bio</label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              disabled={!isEditing}
-              onChange={handleChange}
-              placeholder="Write about yourself..."
-              className="w-full border p-2 rounded mt-1"
-            />
-          </div>
-        </div>
-
-        {/* SKILLS */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Skills
-          </h3>
-
-          <select
-            multiple
-            value={formData.skills}
-            disabled={!isEditing}
-            onChange={(e) => handleMultiSelect(e, "skills")}
-            className="w-full border p-2 rounded h-40"
-          >
-            {skillOptions.map((s, i) => (
-              <option key={i} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* LANGUAGES */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Languages
-          </h3>
-
-          <select
-            multiple
-            value={formData.language}
-            disabled={!isEditing}
-            onChange={(e) => handleMultiSelect(e, "language")}
-            className="w-full border p-2 rounded h-32"
-          >
-            {languageOptions.map((l, i) => (
-              <option key={i} value={l}>{l}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* LOCATION */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">
-            Location
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <select
-              name="state_id"
-              value={formData.state_id}
-              disabled={!isEditing}
-              onChange={handleStateChange}
-              className="border p-2 rounded"
-            >
-              <option value="">Select State</option>
-              {states.map((s) => (
-                <option key={s.state_id} value={s.state_id}>
-                  {s.state_name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              name="city_id"
-              value={formData.city_id}
-              disabled={!isEditing}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            >
-              <option value="">Select City</option>
-              {cities.map((c) => (
-                <option key={c.city_id} value={c.city_id}>
-                  {c.city_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
       </div>
+
+      {/* SKILLS */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Skills
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.skills.length > 0 ? (
+            formData.skills.map((skill, i) => (
+              <span
+                key={i}
+                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500">No data</p>
+          )}
+        </div>
+      </div>
+
+      {/* LANGUAGES */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Languages
+        </h3>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.language.length > 0 ? (
+            formData.language.map((lang, i) => (
+              <span
+                key={i}
+                className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm"
+              >
+                {lang}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500">No data</p>
+          )}
+        </div>
+      </div>
+
     </div>
   </div>
+</div>
 
 );
 }
 export default InstructorProfile;
+
+
+// import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import SideBar from "../components/SideBar";
+// import Api from "../services/Api";
+
+// function InstructorProfile() {
+//   const [profile, setProfile] = useState(null);
+//   const [user, setUser] = useState(null);
+
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const userRes = await Api.get("/me");
+//         setUser(userRes.data);
+
+//         const profileRes = await Api.get(
+//           `/get_instructor_by_user/${userRes.data.user_id}`
+//         );
+
+//         if (profileRes.data.exists) {
+//           setProfile(profileRes.data);
+//         }
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   return (
+//     <div className="flex bg-gray-100 min-h-screen">
+//       <SideBar />
+
+//       <div className="flex-1 p-8 flex justify-center items-start">
+//         <div className="w-full max-w-5xl">
+
+//           {/* CARD */}
+//           <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+
+//             {/* HEADER */}
+//             <div className="flex justify-between items-center border-b pb-4">
+//               <div>
+//                 <h2 className="text-2xl font-bold text-gray-800">
+//                   Instructor Profile
+//                 </h2>
+//                 <p className="text-gray-500 text-sm">
+//                   Your professional information
+//                 </p>
+//               </div>
+
+//               <button
+//                 onClick={() => navigate("/edit-instructor-profile")}
+//                 className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+//               >
+//                 Edit Profile
+//               </button>
+//             </div>
+
+//             {/* PROFILE IMAGE */}
+//             <div className="flex items-center gap-5">
+//               <img
+//                 src={`http://localhost:8000/instructor_photo/${user?.user_id}`}
+//                 className="w-24 h-24 rounded-full object-cover border-4 border-indigo-500"
+//                 alt="profile"
+//               />
+
+//               <div>
+//                 <h3 className="text-xl font-semibold">
+//                   {user?.fullname || "Instructor"}
+//                 </h3>
+//                 <p className="text-gray-500">{user?.email}</p>
+//               </div>
+//             </div>
+
+//             {/* DATA GRID */}
+//             <div className="grid md:grid-cols-2 gap-6 text-sm">
+
+//               <ProfileItem label="Gender" value={profile?.gender} />
+//               <ProfileItem label="Mobile" value={profile?.mobile} />
+//               <ProfileItem label="Experience" value={profile?.experience + " Years"} />
+//               <ProfileItem label="State" value={profile?.state_id} />
+//               <ProfileItem label="City" value={profile?.city_id} />
+
+//             </div>
+
+//             {/* FULL WIDTH */}
+//             <ProfileBlock label="Qualification" value={profile?.qualification} />
+//             <ProfileBlock label="Skills" value={profile?.skills} />
+//             <ProfileBlock label="Languages" value={profile?.language} />
+//             <ProfileBlock label="Bio" value={profile?.bio} />
+
+//           </div>
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default InstructorProfile;
+
+
+// function ProfileItem({ label, value }) {
+//   return (
+//     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+//       <p className="text-gray-500 text-xs">{label}</p>
+//       <p className="font-semibold text-gray-800 mt-1">
+//         {value || "Not provided"}
+//       </p>
+//     </div>
+//   );
+// }
+
+// function ProfileBlock({ label, value }) {
+//   return (
+//     <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+//       <p className="text-gray-500 text-xs mb-1">{label}</p>
+//       <p className="text-gray-800">
+//         {value || "Not provided"}
+//       </p>
+//     </div>
+//   );
+// }
+
+

@@ -35,9 +35,9 @@
     // const SUPABASE_BASE = "https://rwompwlcjbigfbnovqxu.supabase.co/storage/v1/object/public/blogimages/";
   
   return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 mb-10">
           {/* Hero */}
-            <div className="relative w-full h-[90vh] mt-10">
+            <div className="relative w-full h-[90vh] mb-10">
             
             {/* Background Image */}  
             <img

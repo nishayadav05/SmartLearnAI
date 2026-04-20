@@ -80,6 +80,7 @@ function Header(){
             <Link to="/blog" className="text-sm/6 font-semibold text-gray-900">Blog</Link>
             <Link to="/allcourses" className="text-sm/6 font-semibold text-gray-900">All Courses</Link>
             <Link to="/contact" className="text-sm/6 font-semibold text-gray-900">Contact</Link>
+             <Link to="/helpcenter" className="text-sm/6 font-semibold text-gray-900">Help Center</Link>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
             </a>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
@@ -126,14 +127,40 @@ function Header(){
                         </li>
 
                         <li>
-                              <a
-                              href="http://localhost:5174/dashboard"
-                              className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition"
+                              <button
+                              onClick={async () => {
+                                    try {
+                                    // Step 1: get logged user id
+                                    const userRes = await Api.get("/me", {
+                                    withCredentials: true,
+                                    });
+
+                                    const userId = userRes.data.user_id;
+
+                                    // Step 2: check instructor profile
+                                    const res = await Api.get(
+                                    `/get_instructor_by_user/${userId}`,
+                                    { withCredentials: true }
+                                    );
+
+                                    if (res.data.exists) {
+                                    // ✅ Profile exists → open dashboard (other project)
+                                    window.location.href = "http://localhost:5174/dashboard";
+                                    } else {
+                                    //  Profile not created → open setup page
+                                    window.location.href = "http://localhost:5174/profilesetup";
+                                    }
+
+                                    } catch (err) {
+                                    console.log(err);
+                                    alert("Error checking instructor profile");
+                                    }
+                              }}
+                              className="flex w-full text-left items-center gap-2 px-4 py-2 hover:bg-blue-50 hover:text-blue-600 transition"
                               >
                               Instructor
-                              </a>
+                        </button>
                         </li>
-
                         <li
                               onClick={handleLogout}
                               className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 hover:text-red-600 cursor-pointer transition"

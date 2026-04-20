@@ -31,7 +31,7 @@ const handleLogin = async (e) => {
 
     console.log("USER:", meRes.data);
 
-    // ================= STUDENT =================
+    // STUDENT 
     if (role === "Student") {
       const studentRes = await Api.get("/get_student_by_user");
 
@@ -40,9 +40,10 @@ const handleLogin = async (e) => {
       } else {
         navigate("/exampleprofile");
       }
+      return;
     }
 
-    // ================= INSTRUCTOR =================
+    // INSTRUCTOR
     else if (role === "Instructor") {
       const instructorRes = await Api.get(`/get_instructor_by_user/${user_id}`);
 
@@ -51,6 +52,7 @@ const handleLogin = async (e) => {
       } else {
         window.location.href = `http://localhost:5174/ProfileSetup?user_id=${user_id}`;
       }
+      return;
     }
     navigate("/home");
     window.location.reload();

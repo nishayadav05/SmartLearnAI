@@ -1,13 +1,25 @@
+from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float,DateTime
 from sqlalchemy import Column,Integer,String,Text,Date,ForeignKey,Time,Float,DateTime,UniqueConstraint
 from database import Base
 from sqlalchemy.orm import relationship
 from datetime import date, datetime
 
 
+class Admin(Base):
+    __tablename__ = 'admin'
+    admin_id = Column(Integer,primary_key=True,index=True,autoincrement=True)
+    admin_email = Column(String(50),unique=True,nullable=False)
+    admin_password = Column(String(255),nullable=False)
+    admin_name = Column(String)
+
+    otps = relationship("OTP",back_populates="admin")
+
 class Users(Base):
     __tablename__ = 'user'
     user_id = Column(Integer, primary_key=True, index=True, autoincrement=True) 
     fullname = Column(String(50), nullable=False)
+    email = Column(String(50),unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
     email = Column(String(50),unique=True)
     password = Column(String(255),nullable=False)
 
@@ -133,14 +145,11 @@ class Instructor(Base):
     city = relationship("City")
     courses = relationship("Course", back_populates="instructor")
 
+# class OTP(Base):
+#     __tablename__ = "otp_table"
 
-class Admin(Base):
-    __tablename__ = 'admin'
-    admin_id = Column(Integer,primary_key=True,index=True,autoincrement=True)
-    admin_email = Column(String(50),unique=True,nullable=False)
-    admin_password = Column(String(255),nullable=False)
-
-    otps = relationship("OTP", back_populates="admin")
+#     otp_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+#     courses = relationship("Course", back_populates="instructor")
 
 
 class CourseView(Base):
@@ -168,4 +177,4 @@ class OTP(Base):
     otp = Column(String)
     expiry = Column(DateTime)
 
-    admin = relationship("Admin", back_populates="otps")
+    admin =  relationship("Admin", back_populates="otps")

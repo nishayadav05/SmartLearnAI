@@ -15,10 +15,13 @@ import CoursesPage1 from "../pages/CoursePage1";
 import Analyticssession1 from "../pages/Analyticssection1";
 import CourseDisplay from "../pages/CourseDisplay";
 import AllCourses from "../pages/AllCourses";
+import { Helicopter } from "lucide-react";
+import HelpCenter from "../pages/HelpCenter";
 import Landing from "../pages/Landing";
 import { AuthProvider, AuthContext } from "../AuthContext";
 import { useContext } from "react";
 import { BrowserRouter } from "react-router-dom";
+import HelpCategory from "../pages/HelpCategory";
 
 
 function AppRoutes(){
@@ -33,6 +36,7 @@ function AppRoutes(){
                         <>
                               <Route path="/" element={<Landing />} />
                               <Route path="/login" element={<Login />} />
+                              <Route path="/registration" element={<Registration></Registration>}/>
                         </>
                         )}
 
@@ -57,6 +61,8 @@ function AppRoutes(){
                         <Route path="/profilesection" element={<Profilesection1/>}></Route>
                         <Route path="/coursepage" element={<CoursesPage1/>}></Route>
                         <Route path="/analyticspage" element={<Analyticssession1/>}></Route>
+                        <Route path="/helpcenter" element={<HelpCenter></HelpCenter>}></Route>
+                        <Route path="/helpcategory/:category" element={<HelpCategory></HelpCategory>}></Route>
                         </>
                         )}
 

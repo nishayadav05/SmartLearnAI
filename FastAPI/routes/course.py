@@ -12,6 +12,20 @@ app = FastAPI()
 router = APIRouter(tags=["Course"])
 
 
+# THUMBNAIL_DIR =r"Z:\\Thumbnail"
+# os.makedirs(THUMBNAIL_DIR, exist_ok=True)
+
+
+# UPLOAD_DIR1="images/Coursevideo"
+# os.makedirs(UPLOAD_DIR1,exist_ok=True)
+
+# UPLOAD_DIR1=r"Z:\\Coursevideo"
+# os.makedirs(UPLOAD_DIR1,exist_ok=True)
+
+THUMBNAIL_DIR = r"\\192.168.41.96\SharedVideos\Thumbnail"
+os.makedirs(THUMBNAIL_DIR, exist_ok=True)
+
+UPLOAD_DIR1 = r"\\192.168.41.96\SharedVideos\Coursevideo"
 THUMBNAIL_DIR = r"SharedVideos/Thumbnail"
 os.makedirs(THUMBNAIL_DIR, exist_ok=True)
 
@@ -165,6 +179,12 @@ def track_course_view(
         course_id=course_id
     )
 
+#     rating = db.query(models.Rating).filter(
+#         models.Rating.user_id == user.id,
+#         models.Rating.course_id == course_id
+#     ).first()
+
+#     return {"rating": rating.rating if rating else 0}
     db.add(new_view)
     db.commit()
 

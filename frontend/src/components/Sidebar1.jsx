@@ -75,7 +75,8 @@ function Sidebar1() {
       await Api.post(`/profile_photo/${userId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
-        }
+        },
+        withCredentials: true
       });
 
       alert("Photo Uploaded Successfully");

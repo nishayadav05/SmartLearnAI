@@ -37,18 +37,16 @@ const qualifications = [
 ];
 
 const skillOptions = [
-  // Programming
-  "C", "C++", "Java", "Python", "JavaScript",
-
-  // Development
+  "C/C++",
+  "Java",
+  "Python",
+  "JavaScript",
   "Full Stack Development",
   "Frontend Development",
   "Backend Development",
   "React",
   "Angular",
   "Node.js",
-
-  // AI / Data
   "Machine Learning",
   "Deep Learning",
   "Artificial Intelligence",
@@ -57,25 +55,19 @@ const skillOptions = [
   "Generative AI",
   "Natural Language Processing (NLP)",
   "Computer Vision",
-
-  // DevOps / Cloud
   "DevOps",
   "Cloud Computing",
   "AWS",
   "Azure",
   "Docker",
   "Kubernetes",
-
-  // Security / Blockchain
   "Cyber Security",
   "Ethical Hacking",
   "Blockchain",
   "Web3",
-
-  // Marketing
   "Digital Marketing",
   "Social Media Marketing",
-  "Search Engine Optimization (SEO)",
+  "SEO (Search Engine Optimization)",
   "Google Ads",
   "Meta Ads",
   "Content Marketing",
@@ -83,29 +75,42 @@ const skillOptions = [
   "Affiliate Marketing",
   "Influencer Marketing",
   "Performance Marketing",
-
-  // Business / Management
   "Business Development",
   "Product Management",
   "Project Management",
   "Entrepreneurship",
   "Startup Strategy",
   "Business Analytics",
-
-  // Design / Creative
-  "UI/UX Design",
+   "UI/UX",
   "Graphic Design",
   "Video Editing",
   "Motion Graphics",
   "Content Creation",
   "Personal Branding",
-
-  // Modern Tech
   "No-Code / Low-Code Development",
   "Automation",
   "Prompt Engineering",
   "AR/VR",
-  "Internet of Things (IoT)"
+  "IoT",
+  "Financial Reporting",
+  "Taxation (GST, Income Tax)",
+  "Auditing",
+  "Banking & Finance",
+  "Excel (Advanced)",
+  "Business Law",
+  "Communication Skills",
+  "Writing & Content Creation",
+  "Critical Thinking",
+  "Research & Analysis",
+  "Public Speaking",
+  "Creativity & Design Thinking",
+  "Social Awareness",
+  "Hardware Knowledge",
+  "Networking Basics",
+  "Software Installation & Maintenance",
+  "Technical Support",
+  "Web Basics"
+  
 ];
 
 function ProfessionalInfo({ nextStep, prevStep, updateData }) {

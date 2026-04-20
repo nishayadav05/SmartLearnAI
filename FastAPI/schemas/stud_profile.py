@@ -4,7 +4,8 @@ from typing import List,Optional
 
 # Base schema for City
 class CityBase(BaseModel):
-      name:str
+    city_name: str
+    state_id: int
 
 # Schema used when creating a new city (POST request)
 class CityCreate(CityBase):

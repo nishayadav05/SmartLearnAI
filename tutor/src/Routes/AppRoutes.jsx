@@ -8,6 +8,7 @@ import Dashboard from "../pages/Dashboard";
 import CourseDatail from "../pages/CourseDatail";
 import InstructorSetup from "../pages/InstructorSetup";
 import ProfileSetup from "../pages/ProfileSetup";
+import EditInstructorProfile from "../pages/EditInstructorPfofile";
 
 function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard/>}></Route>
         <Route path="/instructorsetup" element={<InstructorSetup />}></Route>
         <Route path="/profilesetup" element={<ProfileSetup />}></Route>
+        <Route path="/editinstructorprofile" element={<EditInstructorProfile></EditInstructorProfile>}></Route>
       </Routes>
   );
 }

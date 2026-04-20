@@ -2,6 +2,8 @@ import Sidebar from "../components/Sidebar";
 import { useState, useEffect } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Api from "../Api";
+import SearchBar from "../components/SearchBar";
+import { prioritySearch } from "../utils/searchUtils";
 
 function Blogs() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,36 +13,92 @@ function Blogs() {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const rowsPerPage = 5;
 
-
-  const filteredBlogs = blogdata.filter((item) =>
-  item.blogername.toLowerCase().includes(search.toLowerCase()) ||
-  item.blogtitle.toLowerCase().includes(search.toLowerCase()) ||
-  item.blogdescription.toLowerCase().includes(search.toLowerCase())
-);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    blogername: "",
+    blogerrole: "",
+    blogtitle: "",
+    blogdescription: "",
+    blogimage: null
+  });
+    const filteredBlogs = prioritySearch(blogdata, search, [
+    "blog_id",
+    "blogername",
+    "blogtitle",
+    "blogdescription"
+  ])
 
   const handleDelete = async (blog_id) => {
     if (window.confirm("Are you sure you want to delete this state?")) {
       try {
         await Api.delete(`/blogs/${blog_id}`);
-        // Remove deleted state from UI without refetching
         setblogdata(blogdata.filter((blog) => blog.blog_id !== blog_id));
         alert("Blog deleted successfully!");
       } catch (error) {
-        console.error("Error deleting state:", error);
+        console.error(error);
         alert("Failed to delete state.");
       }
     }
   };
 
+  const handleEdit = (data) => {
+    setSelectedBlog(data);
+
+    setFormData({
+      blogername: data.blogername,
+      blogerrole: data.blogerrole,
+      blogtitle: data.blogtitle,
+      blogdescription: data.blogdescription,
+      blogimage: null
+    });
+
+    setIsEditMode(true);
+    setShowModal(true);
+  };
 
   const handleView = (data) => {
     setSelectedBlog(data);
+    setIsEditMode(false); // IMPORTANT
     setShowModal(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, blogimage: e.target.files[0] });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const form = new FormData();
+
+      form.append("blogername", formData.blogername);
+      form.append("blogerrole", formData.blogerrole);
+      form.append("blogtitle", formData.blogtitle);
+      form.append("blogdescription", formData.blogdescription);
+
+      if (formData.blogimage) {
+        form.append("blogimage", formData.blogimage);
+      }
+
+      await Api.put(`/blogs/${selectedBlog.blog_id}`, form);
+
+      alert("Blog updated successfully");
+      fetchdata();
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      alert("Update failed");
+    }
   };
 
   const closeModal = () => {
     setShowModal(false);
     setSelectedBlog(null);
+    setIsEditMode(false);
   };
 
   const fetchdata = async () => {
@@ -54,53 +112,29 @@ function Blogs() {
 
   const lastIndex = currentPage * rowsPerPage;
   const firstIndex = lastIndex - rowsPerPage;
-
   const totalPages = Math.ceil(filteredBlogs.length / rowsPerPage);
   const currentBlogs = filteredBlogs.slice(firstIndex, lastIndex);
-
-  // const currentBlogs = blogdata.slice(firstIndex, lastIndex);
 
   return (
     <div className="flex bg-gray-900 min-h-screen text-gray-200">
       <Sidebar />
-
       <div className="ml-64 p-6 w-full min-h-screen bg-gray-900">
-        <h1 className="text-3xl font-bold mb-6 text-white">Blogs</h1>
+         <h1 className="text-3xl font-bold mb-6 text-white">Blogs</h1>
 
-        <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+         <SearchBar
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // important
+          }}
+          placeholder="Search by name, title, description..."
+        />
 
-        <div className="flex justify-between items-center mb-5">
+         <div className="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
+        
+       <div className="flex justify-between items-center mb-5">
 
-    <div className="flex items-center gap-4 mb-6">
-
-      {/* Title */}
-      {/* <h2 className="text-lg font-semibold text-gray-300 whitespace-nowrap">
-        Student List
-      </h2> */}
-
-      {/* SEARCH BOX */}
-      <div className="relative flex-1 group">
-
-        {/* Glow effect */}
-        <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 opacity-0 group-focus-within:opacity-100 blur-sm transition duration-300"></div>
-
-        <div className="relative flex items-center bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 shadow-md">
-          
-          {/* ICON */}
-          <span className="text-gray-400 mr-3">🔍</span>
-
-          {/* INPUT */}
-          <input
-            type="text"
-            placeholder="Search by name, skills, education..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-transparent outline-none text-sm text-gray-200 placeholder-gray-500"
-          />
-        </div>
-
-      </div>
-
+     <div className="flex items-center gap-4 mb-6">
     </div>
 
 
@@ -219,34 +253,133 @@ function Blogs() {
         </div>
       </div>
 
+      {/* MODAL */}
+     {showModal && selectedBlog && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+    
+    <div className="bg-gray-900 text-white rounded-xl shadow-xl w-[900px] max-h-[90vh] overflow-y-auto p-6 relative border border-gray-700">
 
+      {/* CLOSE BUTTON */}
+      <button
+        onClick={closeModal}
+        className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl"
+      >
+        ✖
+      </button>
 
-    {showModal && selectedBlog && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-        
-        <div className="bg-gray-900 text-white rounded-xl shadow-xl w-[700px] p-6 relative border border-gray-700">
+      {/* TITLE */}
+      <h2 className="text-2xl font-bold mb-4 text-blue-400">
+        {isEditMode ? "Edit Blog" : "Blog Details"}
+      </h2>
 
-          {/* CLOSE BUTTON */}
-          <button
-            onClick={closeModal}
-            className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl"
-          >
-            ✖
-          </button>
+      {isEditMode ? (
+        <div className="space-y-4">
 
-          {/* TITLE */}
-          <h2 className="text-2xl font-bold mb-4 text-blue-400">
-            Blog Details
-          </h2>
+         <div className="grid grid-cols-2 gap-4">
 
-          {/* IMAGE */}
+          {/* Blogger Name */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Blogger Name</label>
+            <input
+              type="text"
+              name="blogername"
+              value={formData.blogername}
+              onChange={handleChange}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Role</label>
+            <select
+              name="blogerrole"
+              value={formData.blogerrole}
+              onChange={handleChange}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-blue-500"
+            >
+              <option value="Instructor">Instructor</option>
+              <option value="Learner">Learner</option>
+              <option value="Employees">Employees</option>
+            </select>
+          </div>
+
+        </div>
+          {/* Title */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Title</label>
+            <input
+              type="text"
+              name="blogtitle"
+              value={formData.blogtitle}
+              onChange={handleChange}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Description</label>
+              <textarea
+                name="blogdescription"
+                value={formData.blogdescription}
+                onChange={handleChange}
+                rows="6"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {/* Image */}
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Current Image</label>
+              
+              <img
+                src={
+                  formData.blogimage
+                    ? URL.createObjectURL(formData.blogimage)
+                    : `http://localhost:8000/BlogImages/${selectedBlog.blogimage}`
+                }
+                className="w-40 h-40 object-cover rounded-lg mb-2 border border-gray-700"
+              />
+
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="text-sm text-gray-300"
+              />
+            </div>
+
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              onClick={closeModal}
+              className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={handleUpdate}
+              className="px-4 py-2 bg-yellow-500 rounded-lg hover:bg-yellow-600 text-black font-semibold"
+            >
+              Update
+            </button>
+          </div>
+
+        </div>
+      ) : (
+        <>
+          {/* VIEW MODE SAME AS YOUR UI */}
           <img
             src={`http://localhost:8000/BlogImages/${selectedBlog.blogimage}`}
             alt="blog"
             className="w-full h-60 object-cover rounded-lg mb-4"
           />
 
-          {/* DETAILS */}
           <div className="space-y-2">
             <p><strong>ID:</strong> {selectedBlog.blog_id}</p>
             <p><strong>Blogger:</strong> {selectedBlog.blogername}</p>
@@ -256,12 +389,12 @@ function Blogs() {
             <p><strong>Description:</strong></p>
             <p className="text-gray-300">{selectedBlog.blogdescription}</p>
           </div>
+        </>
+      )}
 
-        </div>
-      </div>
-    )}
-
-
+    </div>
+  </div>
+)}
     </div>
   );
 }

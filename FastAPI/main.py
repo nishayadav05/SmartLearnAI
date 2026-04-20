@@ -7,9 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import Annotated
 from schemas.user import UserModel
-from routes import blog,users
+# from routes import blog,users
 from fastapi.staticfiles import StaticFiles
-from routes import stud_profile,course,contact,instructor_profile,admin
+from routes import stud_profile,course,contact,instructor_profile,admin,blog,users
 import os
 
 origins = [
@@ -27,14 +27,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
+app.include_router(admin.router)
 app.include_router(blog.router)
 app.include_router(users.router)
 app.include_router(stud_profile.router)
 app.include_router(course.router)
 app.include_router(contact.router)
 app.include_router(instructor_profile.router)
-app.include_router(admin.router)
+# app.include_router(admin.router)
 
 #Blog Image Folder
 UPLOAD_DIR=r"\\192.168.41.96\SharedVideos\BlogImages"
@@ -62,18 +62,16 @@ app.mount(
     StaticFiles(directory=VIDEO_DIR ),
     name="Coursevideo"
 )
-
+STUDENT_DIR=r"\\192.168.41.96\SharedVideos\StudentPhotos"
+os.makedirs(STUDENT_DIR,exist_ok=True)
 app.mount(
       "/StudentPhotos",
-      StaticFiles(directory="D:/SmartLearnAI/FastAPI/SharedVideos/StudentPhotos"),
-      name="StudentPhotos"
+      StaticFiles(directory=STUDENT_DIR),
+      name="StudentPhotos"  
 )
 
+# models.Base.metadata.create_all(bind=engine)
 # create all database tables
-models.Base.metadata.create_all(bind=engine)
-
-
-# Dependency to get database session
 def get_db():
       db = SessionLocal()
       try:
